@@ -6,11 +6,11 @@ Route::get('/', function () {
     return view('login');
 });
 
-Route::get('videotron', function () {
+Route::get('/videotron', function () {
     return view('videotron');
 });
 
-Route::get('dashboard', function () {
+Route::get('/dashboard', function () {
     return view('dashboard');
 });
     

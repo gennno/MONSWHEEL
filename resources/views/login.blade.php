@@ -5,29 +5,20 @@
 @section('content')
     <div class="min-h-screen grid grid-rows-[auto_1fr] md:grid-cols-2 md:grid-rows-1 overflow-hidden">
         {{-- LEFT SECTION (BACKGROUND LOGO) --}}
-        <div class="relative hidden md:flex items-center justify-center px-6 overflow-hidden bg-gray-950">
+        <div class="relative hidden md:flex items-center justify-center px-6 overflow-hidden bg-black">
 
-
-            {{-- Background Logo --}}
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <img src="{{ asset('img/monswheel.png') }}" alt="MONSWHEEL Background"
                     class="w-[300px] sm:w-[380px] md:w-[460px] opacity-100 rounded-2xl">
             </div>
 
-            {{-- Content (if you want text later) --}}
             <div class="relative z-10">
-                {{-- You can add text here later if needed --}}
             </div>
         </div>
 
 
         {{-- RIGHT SECTION (FORM WITH BACKGROUND LOGO) --}}
-        <div class="relative flex items-center justify-center bg-gray-950 px-4 py-8 overflow-hidden">
-
-            {{-- Background Logo --}}
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <img src="{{ asset('img/monswheel.png') }}" alt="Background Logo" class="w-[280px] md:w-[360px] opacity-10">
-            </div>
+        <div class="relative flex items-center justify-center bg-black px-4 py-8 overflow-hidden">
 
             {{-- Content --}}
             <div class="relative z-10 w-full max-w-md">
