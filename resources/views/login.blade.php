@@ -42,15 +42,13 @@
 
                 {{-- Form Card --}}
                 <div class="bg-gray-800 rounded-lg shadow-xl p-6 sm:p-8">
-                    <form action="" method="POST" class="space-y-5">
+                    <form action="{{ route('login') }}" method="POST" class="space-y-5">
                         @csrf
-
-                        {{-- Email --}}
                         <div>
                             <label class="block text-gray-300 text-sm mb-2">
-                                Email or Username
+                                Username
                             </label>
-                            <input type="text" name="email" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
+                            <input type="text" name="username" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
                                       focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         </div>
 
@@ -91,4 +89,10 @@
 
 
     </div>
+    @if ($errors->any())
+    <div class="bg-red-500/20 text-red-400 px-4 py-2 rounded-lg text-sm">
+        {{ $errors->first() }}
+    </div>
+@endif
+
 @endsection

@@ -1,77 +1,68 @@
-<div x-data="{ open: false }" class="bg-gray-950 border-b border-gray-800">
+<div class="bg-gray-950 border-b border-gray-800 relative">
 
     <!-- TOP BAR -->
     <div class="flex items-center justify-between px-4 py-3">
 
-        <!-- LEFT: HAMBURGER -->
-        <button
-            @click="open = !open"
-            class="w-11 h-11 flex items-center justify-center rounded-lg bg-gray-800 text-white active:bg-gray-700"
-            aria-label="Open Menu"
-        >
-            <!-- Hamburger Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
+        <!-- HAMBURGER -->
+        <button id="menuBtn"
+            class="w-11 h-11 flex items-center justify-center rounded-lg bg-gray-800 text-white active:bg-gray-700">
+            ☰
         </button>
 
-        <!-- CENTER: TITLE -->
+        <!-- TITLE -->
         <div class="text-white font-bold tracking-wide text-lg">
             MONSWHEEL
         </div>
 
-        <!-- RIGHT: TIME -->
-        <div class="text-gray-400 text-sm">
-            {{ now()->format('H:i') }}
+        <!-- TIME -->
+        <div class="text-gray-400 text-sm hidden sm:block">
+            {{ now()->format('d M Y • H:i') }}
         </div>
     </div>
 
     <!-- DROPDOWN MENU -->
-    <div
-        x-show="open"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 -translate-y-2"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 -translate-y-2"
-        @click.outside="open = false"
-        class="bg-gray-900 border-t border-gray-800"
-    >
+@php
+    $user = Auth::user();
+@endphp
 
-        <ul class="flex flex-col divide-y divide-gray-800 text-base">
+<div id="menu"
+     class="hidden bg-gray-900 border-t border-gray-800">
 
+    <ul class="flex flex-col divide-y divide-gray-800 text-base">
+
+        <li>
+            <a href="/dashboard" class="menu-item">📊 Dashboard</a>
+        </li>
+
+        <li>
+            <a href="/monitoring" class="menu-item">🖥 Monitor</a>
+        </li>
+
+        <li>
+            <a href="/units" class="menu-item">🚚 Unit</a>
+        </li>
+
+        {{-- SETTINGS: SEMUA ROLE KECUALI ADMIN --}}
+        @if ($user->role !== 'admin')
             <li>
-                <a href="#"
-                   class="flex items-center gap-3 px-6 py-4 text-white hover:bg-gray-800">
-                    📊 Dashboard
-                </a>
+                <a href="/settings" class="menu-item">⚙️ Settings</a>
             </li>
+        @endif
 
+        {{-- USER MANAGEMENT: HANYA ADMIN --}}
+        @if ($user->role === 'admin')
             <li>
-                <a href="#"
-                   class="flex items-center gap-3 px-6 py-4 text-white hover:bg-gray-800">
-                    🖥 Monitor
-                </a>
+                <a href="/users" class="menu-item">👤 User</a>
             </li>
+        @endif
 
-            <li>
-                <a href="#"
-                   class="flex items-center gap-3 px-6 py-4 text-white hover:bg-gray-800">
-                    ⚙️ Settings
-                </a>
-            </li>
+        <li>
+            <a id="logoutBtn" class="menu-item text-red-400 cursor-pointer">
+                🚪 Logout
+            </a>
+        </li>
 
-            <li>
-                <a href="#"
-                   class="flex items-center gap-3 px-6 py-4 text-red-400 hover:bg-gray-800">
-                    🚪 Logout
-                </a>
-            </li>
-
-        </ul>
-    </div>
+    </ul>
+</div>
 
 </div>
