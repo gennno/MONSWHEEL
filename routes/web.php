@@ -62,8 +62,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('dashboard.download');
 
 
-
-
     // Admin only
     Route::middleware('role:admin')->group(function () {
 
@@ -77,13 +75,10 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-    // Site only
-    Route::middleware('role:site')->group(function () {
-        // route site
+    Route::middleware('role:site,office')->group(function () {
+    
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     });
 
-    // Office only
-    Route::middleware('role:office')->group(function () {
-        // route office
-    });
 });
