@@ -17,20 +17,8 @@ Schema::create('units', function (Blueprint $table) {
     // Identity
     $table->string('code')->unique();
     $table->string('type')->nullable();
-
-    // Operational state
-    $table->unsignedTinyInteger('current_shift')->nullable();
-    $table->enum('service_status', [
-        'idle',
-        'on_service',
-        'handover',
-        'finished'
-    ])->default('idle');
-
-    // FK DIISI NANTI
-    $table->unsignedBigInteger('active_service_id')->nullable();
-
-    $table->enum('status', ['Active', 'Inactive'])->default('Active');
+    $table->string('img')->nullable();
+    $table->enum('status', ['active', 'service', 'inactive'])->default('Active');
 
     $table->timestamps();
 });

@@ -12,109 +12,105 @@ return new class extends Migration
             $table->id();
 
             /*
-            |--------------------------------------------------------------------------
-            | ORIGINAL SERVICE ID (OPTIONAL TRACE)
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
+            | TRACE TO ORIGINAL SERVICE
+            |----------------------------------------------------------------------
             */
             $table->unsignedBigInteger('service_id')->nullable();
 
             /*
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
             | RELATION
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
             */
             $table->foreignId('unit_id')
                   ->constrained()
                   ->cascadeOnDelete();
 
-            $table->foreignId('created_by')
-                  ->constrained('users')
-                  ->cascadeOnDelete();
-
-            $table->foreignId('handover_to')
-                  ->nullable()
-                  ->constrained('users')
-                  ->nullOnDelete();
-
             /*
-            |--------------------------------------------------------------------------
-            | DATE & SHIFT
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
+            | HEADER
+            |----------------------------------------------------------------------
             */
             $table->date('service_date');
-            $table->unsignedTinyInteger('shift'); // final shift (biasanya 2)
-
-            /*
-            |--------------------------------------------------------------------------
-            | PERSON IN CHARGE
-            |--------------------------------------------------------------------------
-            */
-            $table->string('kapten')->nullable();
             $table->string('gl')->nullable();
-            $table->string('qa1')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | NOTES & ACTIONS
-            |--------------------------------------------------------------------------
-            */
-            $table->text('note1')->nullable();
-            $table->enum('washing', ['yes', 'no'])->nullable();
-            $table->text('note2')->nullable();
-            $table->text('action_service')->nullable();
-            $table->text('note3')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | BACKLOG
-            |--------------------------------------------------------------------------
-            */
+            $table->string('kapten')->nullable();
             $table->string('bays')->nullable();
-            $table->text('action_backlog')->nullable();
-            $table->text('note4')->nullable();
+            $table->string('backlog_item')->nullable();
 
             /*
-            |--------------------------------------------------------------------------
-            | RFU & DOWNTIME
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
+            | TIME LOG (PLAN vs ACTUAL)
+            |----------------------------------------------------------------------
             */
-            $table->enum('rfu', ['ready', 'not_ready'])->nullable();
-            $table->dateTime('downtime_plan')->nullable();
-            $table->dateTime('downtime_actual')->nullable();
+            $table->time('in_plan')->nullable();
+            $table->time('in_actual')->nullable();
+
+            $table->time('qa1_plan')->nullable();
+            $table->time('qa1_actual')->nullable();
+
+            $table->time('washing_plan')->nullable();
+            $table->time('washing_actual')->nullable();
+
+            $table->time('action_service_plan')->nullable();
+            $table->time('action_service_actual')->nullable();
+
+            $table->time('action_backlog_plan')->nullable();
+            $table->time('action_backlog_actual')->nullable();
+
+            $table->time('qa7_plan')->nullable();
+            $table->time('qa7_actual')->nullable();
 
             /*
-            |--------------------------------------------------------------------------
-            | FINAL NOTE
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
+            | DOWNTIME (DURATION)
+            |----------------------------------------------------------------------
             */
-            $table->text('note5')->nullable();
+            $table->unsignedSmallInteger('downtime_plan')->nullable();
+            $table->unsignedSmallInteger('downtime_actual')->nullable();
 
             /*
-            |--------------------------------------------------------------------------
-            | FLOW TIMESTAMPS
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
+            | NOTES
+            |----------------------------------------------------------------------
             */
+            $table->text('note_in')->nullable();
+            $table->text('note_qa1')->nullable();
+            $table->text('note_washing')->nullable();
+            $table->text('note_action_service')->nullable();
+            $table->text('note_action_backlog')->nullable();
+            $table->text('note_qa7')->nullable();
+            $table->text('note_downtime')->nullable();
+
+            /*
+            |----------------------------------------------------------------------
+            | FINAL STATUS SNAPSHOT
+            |----------------------------------------------------------------------
+            */
+            $table->enum('remark', ['ok', 'over'])->nullable();
+            $table->enum('status', ['plan', 'process', 'continue', 'done']);
+
             $table->timestamp('handover_at')->nullable();
             $table->timestamp('completed_at')->nullable();
 
             /*
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
             | ARCHIVE METADATA
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
             */
             $table->timestamp('archived_at')->useCurrent();
-            $table->string('archived_by')->default('system'); 
-            // system / scheduler / admin username
+            $table->string('archived_by')->default('system');
 
             $table->timestamps();
 
             /*
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
             | INDEX
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------------------
             */
             $table->index(['service_date']);
             $table->index(['unit_id']);
+            $table->index(['service_id']);
         });
     }
 
