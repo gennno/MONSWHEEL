@@ -10,7 +10,7 @@ class ServiceHistory extends Model
     use HasFactory;
 
     /**
-     * Table name (opsional, tapi eksplisit)
+     * Table name (explicit)
      */
     protected $table = 'service_histories';
 
@@ -23,39 +23,44 @@ class ServiceHistory extends Model
 
         // Relation
         'unit_id',
-        'created_by',
-        'handover_to',
 
-        // Date & shift
+        // Header
         'service_date',
-        'shift',
-
-        // Person in charge
-        'kapten',
         'gl',
-        'qa1',
-
-        // Notes & actions
-        'note1',
-        'washing',
-        'note2',
-        'action_service',
-        'note3',
-
-        // Backlog
+        'kapten',
         'bays',
-        'action_backlog',
-        'note4',
+        'backlog_item',
 
-        // RFU & downtime
-        'rfu',
+        // Time log (plan vs actual)
+        'in_plan',
+        'in_actual',
+        'qa1_plan',
+        'qa1_actual',
+        'washing_plan',
+        'washing_actual',
+        'action_service_plan',
+        'action_service_actual',
+        'action_backlog_plan',
+        'action_backlog_actual',
+        'qa7_plan',
+        'qa7_actual',
+
+        // Downtime
         'downtime_plan',
         'downtime_actual',
 
-        // Final note
-        'note5',
+        // Notes
+        'note_in',
+        'note_qa1',
+        'note_washing',
+        'note_action_service',
+        'note_action_backlog',
+        'note_qa7',
+        'note_downtime',
 
-        // Flow timestamps
+        // Final snapshot
+        'remark',
+        'status',
         'handover_at',
         'completed_at',
 
@@ -68,12 +73,10 @@ class ServiceHistory extends Model
      * Attribute casting
      */
     protected $casts = [
-        'service_date'    => 'date',
-        'downtime_plan'   => 'datetime',
-        'downtime_actual' => 'datetime',
-        'handover_at'     => 'datetime',
-        'completed_at'    => 'datetime',
-        'archived_at'     => 'datetime',
+        'service_date'  => 'date',
+        'handover_at'   => 'datetime',
+        'completed_at'  => 'datetime',
+        'archived_at'   => 'datetime',
     ];
 
     /*
@@ -88,23 +91,7 @@ class ServiceHistory extends Model
     }
 
     /**
-     * User shift 1 (creator)
-     */
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    /**
-     * User shift 2 (handover)
-     */
-    public function handoverUser()
-    {
-        return $this->belongsTo(User::class, 'handover_to');
-    }
-
-    /**
-     * Reference to original service (optional trace)
+     * Reference to original service (trace)
      */
     public function service()
     {
@@ -118,7 +105,7 @@ class ServiceHistory extends Model
     */
 
     /**
-     * Filter by date
+     * Filter by service date
      */
     public function scopeOnDate($query, $date)
     {
@@ -133,6 +120,14 @@ class ServiceHistory extends Model
         return $query->where('unit_id', $unitId);
     }
 
+    /**
+     * Only archived records
+     */
+    public function scopeArchived($query)
+    {
+        return $query->whereNotNull('archived_at');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | HELPERS
@@ -142,5 +137,20 @@ class ServiceHistory extends Model
     public function isArchived(): bool
     {
         return ! is_null($this->archived_at);
+    }
+
+    public function isDone(): bool
+    {
+        return $this->status === 'done';
+    }
+
+    public function isOver(): bool
+    {
+        return $this->remark === 'over';
+    }
+
+    public function isOk(): bool
+    {
+        return $this->remark === 'ok';
     }
 }

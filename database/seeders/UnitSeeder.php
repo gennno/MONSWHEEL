@@ -27,14 +27,12 @@ class UnitSeeder extends Seeder
 
         foreach ($units as $unit) {
             DB::table('units')->insert([
-                'code'              => $unit['code'],
-                'type'              => $unit['type'],
-                'current_shift'     => null, // belum service
-                'service_status'    => 'idle',
-                'active_service_id' => null,
-                'status'            => 'Active',
-                'created_at'        => $now,
-                'updated_at'        => $now,
+                'code'       => $unit['code'],
+                'type'       => $unit['type'],
+                'img'        => null,
+                'status'     => 'active', // harus lowercase sesuai enum
+                'created_at' => $now,
+                'updated_at' => $now,
             ]);
         }
     }

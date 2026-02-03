@@ -18,7 +18,7 @@ Schema::create('units', function (Blueprint $table) {
     $table->string('code')->unique();
     $table->string('type')->nullable();
     $table->string('img')->nullable();
-    $table->enum('status', ['active', 'service', 'inactive'])->default('Active');
+    $table->enum('status', ['active', 'service', 'inactive'])->default('active');
 
     $table->timestamps();
 });

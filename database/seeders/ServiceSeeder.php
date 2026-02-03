@@ -12,83 +12,88 @@ class ServiceSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        // Ambil user sesuai seeder kamu
-        $operator = DB::table('users')->where('username', 'operator1')->first();
-        $office   = DB::table('users')->where('username', 'office1')->first();
-
         // Ambil 10 unit
         $units = DB::table('units')->take(10)->get();
 
         foreach ($units as $index => $unit) {
 
-            // Tentukan status service
-            if ($index < 5) {
-                $status = 'open';
-                $shift  = 1;
-            } elseif ($index < 8) {
-                $status = 'handover';
-                $shift  = 1;
-            } else {
-                $status = 'done';
-                $shift  = 2;
-            }
+            /**
+             * Tentukan status service
+             * 0–3   : plan
+             * 4–6   : process
+             * 7–8   : continue
+             * 9     : done
+             */
+            $status = match (true) {
+                $index < 4 => 'plan',
+                $index < 7 => 'process',
+                $index < 9 => 'continue',
+                default    => 'done',
+            };
 
-            $serviceId = DB::table('services')->insertGetId([
-                'unit_id'        => $unit->id,
-                'created_by'     => $operator->id,
-                'handover_to'    => $status !== 'open' ? $office->id : null,
+            DB::table('services')->insert([
+                'unit_id'      => $unit->id,
 
-                'service_date'   => now()->toDateString(),
-                'shift'          => $shift,
-
-                'kapten'         => 'KAPTEN ' . ($index + 1),
-                'gl'             => 'GL ' . ($index + 1),
-                'qa1'            => 'QA ' . ($index + 1),
-
-                'note1'          => 'Initial inspection',
-                'washing'        => $index % 2 === 0 ? 'yes' : 'no',
-                'note2'          => 'Washing note',
-                'action_service' => 'Routine service',
-                'note3'          => 'Service in progress',
-
-                'bays'           => 'BAY-' . ($index + 1),
-                'action_backlog' => $index % 3 === 0 ? 'Replace brake pad' : null,
-                'note4'          => 'Backlog checked',
-
-                'rfu'            => $status === 'done' ? 'ready' : 'not_ready',
-                'downtime_plan'  => $now->copy()->addHours(2),
-                'downtime_actual'=> $status === 'done'
-                                    ? $now->copy()->addHours(3)
+                // Header
+                'service_date' => now()->toDateString(),
+                'kapten'       => 'KAPTEN ' . ($index + 1),
+                'gl'           => 'GL ' . ($index + 1),
+                'bays'         => 'BAY-' . ($index + 1),
+                'backlog_item' => $index % 3 === 0
+                                    ? 'Replace brake pad'
                                     : null,
 
-                'note5'          => 'Final note',
+                // ===== TIME LOG =====
+                'in_plan'                => '08:00:00',
+                'in_actual'              => $status !== 'plan' ? '08:10:00' : null,
 
-                'status'         => $status,
-                'handover_at'    => $status !== 'open'
+                'qa1_plan'               => '09:00:00',
+                'qa1_actual'             => in_array($status, ['process','continue','done'])
+                                            ? '09:15:00'
+                                            : null,
+
+                'washing_plan'           => '10:00:00',
+                'washing_actual'         => $status === 'done' ? '10:20:00' : null,
+
+                'action_service_plan'    => '11:00:00',
+                'action_service_actual'  => in_array($status, ['continue','done'])
+                                            ? '11:30:00'
+                                            : null,
+
+                'action_backlog_plan'    => '13:00:00',
+                'action_backlog_actual'  => $status === 'done' ? '13:40:00' : null,
+
+                'qa7_plan'               => '14:00:00',
+                'qa7_actual'             => $status === 'done' ? '14:10:00' : null,
+
+                // Downtime (minutes)
+                'downtime_plan'   => 120,
+                'downtime_actual' => $status === 'done' ? 150 : null,
+
+                // Notes
+                'note_in'              => 'Initial inspection',
+                'note_qa1'             => 'QA1 checked',
+                'note_washing'         => 'Washing completed',
+                'note_action_service'  => 'Routine service',
+                'note_action_backlog'  => 'Backlog checked',
+                'note_qa7'             => 'Final QA',
+                'note_downtime'        => $status === 'done'
+                                            ? 'Extra downtime due to part replacement'
+                                            : null,
+
+                // Status
+                'remark'        => $status === 'done' && $index % 2 === 0 ? 'over' : 'ok',
+                'status'        => $status,
+                'handover_at'   => in_array($status, ['continue','done'])
                                     ? $now->copy()->addHours(4)
                                     : null,
-                'completed_at'   => $status === 'done'
+                'completed_at'  => $status === 'done'
                                     ? $now->copy()->addHours(6)
                                     : null,
 
-                'created_at'     => $now,
-                'updated_at'     => $now,
+                'created_at'    => $now,
+                'updated_at'    => $now,
             ]);
-
-            // Sinkron ke table units
-            DB::table('units')
-                ->where('id', $unit->id)
-                ->update([
-                    'current_shift'     => $shift,
-                    'service_status'    => match ($status) {
-                        'open'     => 'on_service',
-                        'handover' => 'handover',
-                        'done'     => 'finished',
-                        default    => 'idle',
-                    },
-                    'active_service_id' => $status !== 'done' ? $serviceId : null,
-                    'updated_at'        => $now,
-                ]);
         }
     }
 }
