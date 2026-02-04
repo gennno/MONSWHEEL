@@ -34,6 +34,13 @@
             <a href="/dashboard" class="menu-item">📊 Dashboard</a>
         </li>
 
+                {{-- USER MANAGEMENT: HANYA ADMIN --}}
+        @if ($user->role === 'admin')
+            <li>
+                <a href="/plans" class="menu-item">🖥 Plan</a>
+            </li>
+        @endif
+
         <li>
             <a href="/monitoring" class="menu-item">🖥 Monitor</a>
         </li>

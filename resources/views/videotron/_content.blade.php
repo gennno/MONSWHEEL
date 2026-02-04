@@ -1,38 +1,97 @@
-@extends('layouts.app')
+<style>
+    /* FORCE TABLE FULL WIDTH */
+    #serviceTable {
+        width: 100% !important;
+        table-layout: fixed;
+    }
 
-@section('title', 'Dashboard - MONSWHEEL')
+    /* HEADER */
+    #serviceTable thead th {
+        font-size: 11px;
+        padding: 6px 4px !important;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
 
-@section('topbar')
-    <x-topbar />
-@endsection
+    /* BODY */
+    #serviceTable tbody td {
+        font-size: 12px;
+        padding: 6px 4px !important;
+        text-align: center;
+        white-space: nowrap;
+    }
 
-@section('content')
+    /* STATUS BADGE SMALLER */
+    #serviceTable .status-badge {
+        font-size: 10px;
+        padding: 2px 8px;
+    }
 
+    /* BACKLOG ITEM WRAP */
+#serviceTable .backlog-cell {
+    white-space: normal !important;
+    word-break: break-word;
+    line-height: 1.3;
+    text-align: left;      /* lebih enak dibaca */
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+</style>
     <div class="p-4 space-y-4">
+<!-- DASHBOARD CARDS -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
 
-        <!-- DASHBOARD CARDS -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-gray-900 rounded-xl p-4 text-center">
-                <div class="text-gray-400 text-sm">TOTAL UNIT</div>
-                <div class="text-2xl font-bold">{{ $totalUnit }}</div>
-            </div>
-            <div class="bg-gray-900 rounded-xl p-4 text-center">
-                <div class="text-gray-400 text-sm">JUMLAH UNIT SERVICE ALL</div>
-                <div class="text-2xl font-bold">{{ $totalService }}</div>
-            </div>
-            <div class="bg-gray-900 rounded-xl p-4 text-center">
-                <div class="text-gray-400 text-sm">JUMLAH UNIT SERVICE YANG MASUK</div>
-                <div class="text-2xl font-bold">{{ $totalServiceDone }}</div>
-            </div>
-            <div class="bg-gray-900 rounded-xl p-4 text-center">
-                <div class="text-gray-400 text-sm">JUMLAH UNIT RFU</div>
-                <div class="text-2xl font-bold text-green-400">{{ $rfuReady }}</div>
-            </div>
+    <!-- DATE & TIME -->
+    <div class="bg-gray-900 rounded-2xl px-6 py-6 text-center flex flex-col justify-center">
+        <div class="text-gray-400 text-sm tracking-widest uppercase">
+            Date & Time
         </div>
+        <div class="text-3xl lg:text-4xl font-bold mt-2">
+            {{ now()->format('d M Y') }}
+        </div>
+        <div class="text-xl lg:text-2xl text-gray-300 mt-1">
+            {{ now()->format('H:i') }}
+        </div>
+    </div>
+
+    <!-- TOTAL SERVICE -->
+    <div class="bg-gray-900 rounded-2xl px-6 py-6 text-center flex flex-col justify-center">
+        <div class="text-gray-400 text-sm tracking-widest uppercase">
+            Total Service
+        </div>
+        <div class="text-4xl lg:text-5xl font-extrabold mt-3">
+            {{ $totalService }}
+        </div>
+    </div>
+
+    <!-- SERVICE MASUK -->
+    <div class="bg-gray-900 rounded-2xl px-6 py-6 text-center flex flex-col justify-center">
+        <div class="text-gray-400 text-sm tracking-widest uppercase">
+            Service Masuk
+        </div>
+        <div class="text-4xl lg:text-5xl font-extrabold mt-3 text-yellow-400">
+            {{ $totalServiceDone }}
+        </div>
+    </div>
+
+    <!-- RFU -->
+    <div class="bg-gray-900 rounded-2xl px-6 py-6 text-center flex flex-col justify-center">
+        <div class="text-gray-400 text-sm tracking-widest uppercase">
+            Unit RFU
+        </div>
+        <div class="text-4xl lg:text-5xl font-extrabold mt-3 text-green-400">
+            {{ $rfuReady }}
+        </div>
+    </div>
+
+</div>
+
 
         <!-- TABLE CONTAINER -->
         <div class="overflow-hidden rounded-2xl border border-gray-700 bg-gray-950">
-            <table id="serviceTable" class="w-full min-w-[1400px] border-collapse">
+            <table id="serviceTable" class="w-full border-collapse table-fixed">
 
                 <thead class="bg-gray-900 text-gray-200 uppercase text-xs">
 
@@ -42,10 +101,9 @@
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">CN</th>
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">Status</th>
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">GL</th>
-                        <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">Backlog Item</th>
+                        <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center backlog-cell">Backlog Item</th>
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">Kapten</th>
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">Bays</th>
-
                         <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">IN</th>
                         <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">QA 1</th>
                         <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">Washing</th>
@@ -88,10 +146,10 @@
                                 @endphp
 
                                 @if($status)
-                                    <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase
-                                                {{ $map[$status] ?? 'bg-gray-500/20 text-gray-300' }}">
-                                        {{ $status }}
-                                    </span>
+                                    <span class="status-badge px-3 py-1 rounded-full font-semibold uppercase
+             {{ $map[$status] ?? 'bg-gray-500/20 text-gray-300' }}">
+    {{ $status }}
+</span>
                                 @else
                                     -
                                 @endif
@@ -102,8 +160,9 @@
                             <td class="px-4 py-3 text-cente border-r border-gray-700">{{ $service->gl ?? '-' }}</td>
 
                             <!-- Backlog -->
-                            <td class="px-4 py-3 text-center border-r border-gray-700">{{ $service->backlog_item ?? '-' }}</td>
-
+<td class="px-4 py-3 border-r border-gray-700 backlog-cell">
+    {{ $service->backlog_item ?? '-' }}
+</td>
                             <!-- Kapten -->
                             <td class="px-4 py-3 text-center border-r border-gray-700">{{ $service->kapten ?? '-' }}</td>
 
@@ -168,77 +227,15 @@
                         </tr>
                     @endforelse
                 </tbody>
-
-
-
             </table>
         </div>
-        <!-- ACTION BUTTONS -->
-        <div class="flex justify-center sm:justify-end gap-3 mt-4 flex-wrap">
 
-            <!-- DOWNLOAD BUTTON -->
-            <a href="{{ route('dashboard.download') }}" class="w-full sm:w-auto
-                          flex items-center justify-center gap-2
-                          px-6 py-3 rounded-xl
-                          bg-emerald-600 hover:bg-emerald-500
-                          text-white font-semibold
-                          transition duration-200 shadow-lg">
-                <i class="fa-solid fa-download"></i>
-                Download
-            </a>
 
-            <!-- SHOW VIDEOTRON BUTTON -->
-            <a target="_blank" href="{{ url('/videotron') }}" class="w-full sm:w-auto
-                          flex items-center justify-center gap-2
-                          px-6 py-3 rounded-xl
-                          bg-blue-600 hover:bg-blue-500
-                          text-white font-semibold
-                          transition duration-200 shadow-lg">
-                <i class="fa-solid fa-tv"></i>
-                Show Videotron
-            </a>
 
+        <!-- FOOTER INFO -->
+        <div class="mt-6 flex justify-between text-gray-400 text-sm">
+            <span>Updated every 5 seconds</span>
+            <span>Status: LIVE MONITORING</span>
         </div>
 
-
-
-
     </div>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-<style>
-    table.dataTable thead th {
-        text-align: center !important;
-        vertical-align: middle !important;
-    }
-</style>
-
-    <script>
-        $(document).ready(function () {
-            $('#serviceTable').DataTable({
-                scrollX: true,
-                autoWidth: false,
-                paging: true,
-                searching: true,
-                ordering: true,
-                info: true,
-                pageLength: 10,
-                lengthMenu: [10, 25, 50, 100],
-
-                order: [[3, 'asc']], // default sort by "Unit Masuk"
-
-                language: {
-                    search: "Search:",
-                    lengthMenu: "Show _MENU_ rows",
-                    info: "Showing _START_ to _END_ of _TOTAL_ services",
-                    paginate: {
-                        previous: "‹",
-                        next: "›"
-                    },
-                    zeroRecords: "No matching service found"
-                }
-            });
-        });
-    </script>
-
-@endsection

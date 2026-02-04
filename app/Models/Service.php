@@ -64,6 +64,23 @@ class Service extends Model
         'service_date'   => 'date',
         'handover_at'    => 'datetime',
         'completed_at'   => 'datetime',
+        'in_plan' => 'datetime:H:i:s',
+        'in_actual' => 'datetime:H:i:s',
+
+        'qa1_plan' => 'datetime:H:i:s',
+        'qa1_actual' => 'datetime:H:i:s',
+
+        'washing_plan' => 'datetime:H:i:s',
+        'washing_actual' => 'datetime:H:i:s',
+
+        'action_service_plan' => 'datetime:H:i:s',
+        'action_service_actual' => 'datetime:H:i:s',
+
+        'action_backlog_plan' => 'datetime:H:i:s',
+        'action_backlog_actual' => 'datetime:H:i:s',
+
+        'qa7_plan' => 'datetime:H:i:s',
+        'qa7_actual' => 'datetime:H:i:s',
     ];
 
     /*

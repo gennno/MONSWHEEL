@@ -29,80 +29,70 @@
                 <table id="unitTable" class="min-w-[700px] w-full text-lg">
                     <thead class="bg-gray-800 text-gray-300">
                         <tr>
-                            <th class="px-3 py-2 text-left">#</th>
-                            <th class="px-3 py-2 text-left">Unit Code</th>
-                            <th class="px-3 py-2 text-left">Type</th>
-                            <th class="px-3 py-2 text-left">Shift</th>
-                            <th class="px-3 py-2 text-left">Status</th>
-                            <th class="px-3 py-2 text-center">Action</th>
+                            <th class="px-3 py-2 border border-gray-700 text-center">#</th>
+                            <th class="px-3 py-2 border border-gray-700 text-center">Photo</th>
+                            <th class="px-3 py-2 border border-gray-700 text-center">Unit Code</th>
+                            <th class="px-3 py-2 border border-gray-700 text-center">Type</th>
+                            <th class="px-3 py-2 border border-gray-700 text-center">Status</th>
+                            <th class="px-3 py-2 border border-gray-700 text-center">Action</th>
                         </tr>
                     </thead>
 
                     <tbody class="divide-y divide-gray-800">
                         @forelse ($units as $index => $unit)
-                                        <tr class="hover:bg-gray-800 transition">
-                                            <td class="px-3 py-3">
-                                                {{ $index + 1 }}
-                                            </td>
+                            <tr class="hover:bg-gray-800 transition">
+                                <td class="px-3 py-3 text-center border-r border-gray-700">
+                                    {{ $index + 1 }}
+                                </td>
+                                
+                                <td class="px-3 py-3 text-center border-r border-gray-700">
+                                    {{ $unit->img ?? '-' }}
+                                </td>
 
-                                            <td class="px-3 py-3 font-semibold">
-                                                {{ $unit->code }}
-                                            </td>
+                                <td class="px-3 py-3 font-semibold text-center border-r border-gray-700">
+                                    {{ $unit->code }}
+                                </td>
 
-                                            <td class="px-3 py-3">
-                                                {{ $unit->type ?? '-' }}
-                                            </td>
+                                <td class="px-3 py-3 text-center border-r border-gray-700">
+                                    {{ $unit->type ?? '-' }}
+                                </td>
 
-                                            <td class="px-3 py-3">
-                                                @if ($unit->current_shift)
-                                                                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold
-                                                                                                        {{ $unit->current_shift == 1
-                                                    ? 'bg-blue-600/20 text-blue-400'
-                                                    : 'bg-purple-600/20 text-purple-400' }}">
-                                                                        Shift {{ $unit->current_shift }}
-                                                                    </span>
-                                                @else
-                                                    -
-                                                @endif
-                                            </td>
+                                <td class="px-3 py-3 text-center border-r border-gray-700">
+                                    <span
+                                        class="px-2 py-0.5 rounded-full text-xs font-semibold
+                                                                    {{ $unit->status === 'Active' ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400' }}">
+                                        {{ $unit->status }}
+                                    </span>
+                                </td>
 
-                                            <td class="px-3 py-3">
-                                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold
-                                                            {{ $unit->status === 'Active'
-                            ? 'bg-green-600/20 text-green-400'
-                            : 'bg-red-600/20 text-red-400' }}">
-                                                    {{ $unit->status }}
-                                                </span>
-                                            </td>
+                                <td class="px-3 py-3 text-center border-r border-gray-700">
+                                    <div class="flex items-center justify-center gap-3">
 
-                                            <td class="px-3 py-3">
-                                                <div class="flex items-center justify-center gap-3">
+                                        <a onclick="viewUnit({{ $unit->id }})"
+                                            class="p-2 bg-blue-600/20 text-blue-400 rounded-lg">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
 
-                                                    <a onclick="viewUnit({{ $unit->id }})"
-                                                        class="p-2 bg-blue-600/20 text-blue-400 rounded-lg">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                    </a>
+                                        @if(auth()->user()->role === 'admin')
+                                            <a onclick="editUnit({{ $unit->id }})"
+                                                class="p-2 bg-yellow-600/20 text-yellow-400 rounded-lg">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
 
-                                                    @if(auth()->user()->role === 'admin')
-                                                        <a onclick="editUnit({{ $unit->id }})"
-                                                            class="p-2 bg-yellow-600/20 text-yellow-400 rounded-lg">
-                                                            <i class="fa-solid fa-pen"></i>
-                                                        </a>
-
-                                                        <form action="{{ route('units.destroy', $unit) }}" method="POST"
-      onsubmit="return confirmDeleteUnit('{{ $unit->code }}')">
-    @csrf
-    @method('DELETE')
-    <button class="p-2 bg-red-600/20 text-red-400 rounded-lg">
-        <i class="fa-solid fa-trash"></i>
-    </button>
-</form>
-                                                    @endif
+                                            <form action="{{ route('units.destroy', $unit) }}" method="POST"
+                                                onsubmit="return confirmDeleteUnit('{{ $unit->code }}')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="p-2 bg-red-600/20 text-red-400 rounded-lg">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
 
 
-                                                </div>
-                                            </td>
-                                        </tr>
+                                    </div>
+                                </td>
+                            </tr>
                         @empty
                             <tr>
                                 <td colspan="6" class="py-6 text-center text-gray-500">
@@ -206,28 +196,28 @@
 
             const actions = document.getElementById('unitModalActions');
             actions.innerHTML = editable
-    ? `
-        <button
-            type="button"
-            onclick="closeUnitModal()"
-            class="px-4 py-2 bg-gray-700 rounded-lg">
-            Cancel
-        </button>
+                ? `
+            <button
+                type="button"
+                onclick="closeUnitModal()"
+                class="px-4 py-2 bg-gray-700 rounded-lg">
+                Cancel
+            </button>
 
-        <button
-            type="submit"
-            class="px-4 py-2 bg-yellow-600 rounded-lg text-black font-semibold">
-            Update
-        </button>
-      `
-    : `
-        <button
-            type="button"
-            onclick="closeUnitModal()"
-            class="px-4 py-2 bg-gray-700 rounded-lg">
-            Close
-        </button>
-      `;
+            <button
+                type="submit"
+                class="px-4 py-2 bg-yellow-600 rounded-lg text-black font-semibold">
+                Update
+            </button>
+          `
+                : `
+            <button
+                type="button"
+                onclick="closeUnitModal()"
+                class="px-4 py-2 bg-gray-700 rounded-lg">
+                Close
+            </button>
+          `;
 
 
             document.getElementById('unitForm').action = `/units/${u.id}`;
@@ -275,10 +265,10 @@
         });
     </script>
 
-<script>
-function confirmDeleteUnit(code) {
-    return confirm(`Delete unit "${code}"?\nThis action cannot be undone.`);
-}
-</script>
+    <script>
+        function confirmDeleteUnit(code) {
+            return confirm(`Delete unit "${code}"?\nThis action cannot be undone.`);
+        }
+    </script>
 
 @endsection
