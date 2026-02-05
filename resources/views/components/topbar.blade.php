@@ -37,7 +37,7 @@
                 {{-- USER MANAGEMENT: HANYA ADMIN --}}
         @if ($user->role === 'admin')
             <li>
-                <a href="/plans" class="menu-item">🖥 Plan</a>
+                <a href="/plans" class="menu-item">🗓️ Plan</a>
             </li>
         @endif
 

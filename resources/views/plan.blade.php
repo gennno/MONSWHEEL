@@ -510,17 +510,6 @@
             .forEach(el => el.addEventListener('change', calculateDowntime));
     </script>
 
-
-    <script>
-        document.querySelectorAll('input[type="time"]').forEach(input => {
-            input.addEventListener('change', () => {
-                if (input.value) {
-                    const [h, m] = input.value.split(':');
-                    input.value = `${h.padStart(2, '0')}:${m}`;
-                }
-            });
-        });
-    </script>
     <script>
         async function openEditPlan(id) {
             const res = await fetch(`/plans/${id}`);
@@ -533,7 +522,9 @@
                 const input = form.querySelector(`[name="${key}"]`);
                 if (!input) continue;
 
-                if (input.type === 'date' && data[key]) {
+                if (input.type === 'time' && data[key]) {
+                    input.value = data[key].substring(0, 5); // HH:mm
+                } else if (input.type === 'date' && data[key]) {
                     input.value = data[key].substring(0, 10);
                 } else {
                     input.value = data[key] ?? '';
