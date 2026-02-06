@@ -7,6 +7,17 @@
 @endsection
 
 @section('content')
+@php
+    function actualCellClass($field, $last) {
+        if (!$last) {
+            return 'bg-green-600/20';
+        }
+
+        return $field === $last
+            ? 'bg-green-600 text-white font-bold ring-2 ring-green-400'
+            : 'bg-green-600/20';
+    }
+@endphp
 
     <div class="p-4 space-y-4">
 
@@ -69,6 +80,27 @@
                 </thead>
                 <tbody class="text-sm font-semibold">
                     @forelse ($services as $service)
+                        @php
+                            $actualOrder = [
+                                'in_actual',
+                                'qa1_actual',
+                                'washing_actual',
+                                'action_service_actual',
+                                'action_backlog_actual',
+                                'qa7_actual',
+                            ];
+
+                            $lastActualField = null;
+
+                            if ($service->status !== 'done') {
+                                foreach ($actualOrder as $field) {
+                                    if (!is_null($service->$field)) {
+                                        $lastActualField = $field;
+                                    }
+                                }
+                            }
+                        @endphp
+
                         <tr class="border-b border-gray-900 even:bg-gray-800">
                             <td class="px-4 py-3 text-center border-r border-gray-700 ">
                                 {{ $service->created_at->format('Y-m-d') }}
@@ -81,15 +113,15 @@
                                     $status = $service->status;
                                     $map = [
                                         'plan' => 'bg-gray-500/20 text-gray-300',
-                                        'process' => 'bg-yellow-500/20 text-yellow-300',
-                                        'continue' => 'bg-blue-500/20 text-blue-300',
+                                        'process' => 'bg-blue-500/20 text-blue-300',
+                                        'continue' => 'bg-yellow-500/20 text-yellow-300',
                                         'done' => 'bg-green-600/20 text-green-400',
                                     ];
                                 @endphp
 
                                 @if($status)
                                     <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase
-                                                {{ $map[$status] ?? 'bg-gray-500/20 text-gray-300' }}">
+                                                            {{ $map[$status] ?? 'bg-gray-500/20 text-gray-300' }}">
                                         {{ $status }}
                                     </span>
                                 @else
@@ -112,34 +144,45 @@
 
                             <!-- IN -->
                             <td class="px-3 py-3 text-center ">{{ $service->in_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center bg-green-600/20 border-r border-gray-700">{{ $service->in_actual?->format('H:i') ?? '-' }}
+                            <td class="px-3 py-3 text-center border-r border-gray-700
+                                {{ actualCellClass('in_actual', $lastActualField) }}">
+                                {{ $service->in_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- QA 1 -->
                             <td class="px-3 py-3 text-center">{{ $service->qa1_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center bg-green-600/20 border-r border-gray-700">{{ $service->qa1_actual?->format('H:i') ?? '-' }}
+                            <td class="px-3 py-3 text-center border-r border-gray-700
+                                {{ actualCellClass('qa1_actual', $lastActualField) }}">
+                                {{ $service->qa1_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- Washing -->
                             <td class="px-3 py-3 text-center">{{ $service->washing_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center bg-green-600/20 border-r border-gray-700">
-                                {{ $service->washing_actual?->format('H:i') ?? '-' }}</td>
+                            <td class="px-3 py-3 text-center border-r border-gray-700
+                                {{ actualCellClass('washing_actual', $lastActualField) }}">
+                                {{ $service->washing_actual?->format('H:i') ?? '-' }}
+                            </td>
 
                             <!-- Action Service -->
                             <td class="px-3 py-3 text-center">{{ $service->action_service_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center bg-green-600/20 border-r border-gray-700">
+                            <td class="px-3 py-3 text-center border-r border-gray-700
+                                {{ actualCellClass('action_service_actual', $lastActualField) }}">
                                 {{ $service->action_service_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- Action Backlog -->
                             <td class="px-3 py-3 text-center">{{ $service->action_backlog_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center bg-green-600/20 border-r border-gray-700">
+                            
+                            <td class="px-3 py-3 text-center border-r border-gray-700
+                                {{ actualCellClass('action_backlog_actual', $lastActualField) }}">
                                 {{ $service->action_backlog_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- QA 7 -->
                             <td class="px-3 py-3 text-center">{{ $service->qa7_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center bg-green-600/20 border-r border-gray-700">{{ $service->qa7_actual?->format('H:i') ?? '-' }}
+                            <td class="px-3 py-3 text-center border-r border-gray-700
+                                {{ actualCellClass('qa7_actual', $lastActualField) }}">
+                                {{ $service->qa7_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- Downtime -->
@@ -178,22 +221,22 @@
 
             <!-- DOWNLOAD BUTTON -->
             <a href="{{ route('dashboard.download') }}" class="w-full sm:w-auto
-                          flex items-center justify-center gap-2
-                          px-6 py-3 rounded-xl
-                          bg-emerald-600 hover:bg-emerald-500
-                          text-white font-semibold
-                          transition duration-200 shadow-lg">
+                              flex items-center justify-center gap-2
+                              px-6 py-3 rounded-xl
+                              bg-emerald-600 hover:bg-emerald-500
+                              text-white font-semibold
+                              transition duration-200 shadow-lg">
                 <i class="fa-solid fa-download"></i>
                 Download
             </a>
 
             <!-- SHOW VIDEOTRON BUTTON -->
             <a target="_blank" href="{{ url('/videotron') }}" class="w-full sm:w-auto
-                          flex items-center justify-center gap-2
-                          px-6 py-3 rounded-xl
-                          bg-blue-600 hover:bg-blue-500
-                          text-white font-semibold
-                          transition duration-200 shadow-lg">
+                              flex items-center justify-center gap-2
+                              px-6 py-3 rounded-xl
+                              bg-blue-600 hover:bg-blue-500
+                              text-white font-semibold
+                              transition duration-200 shadow-lg">
                 <i class="fa-solid fa-tv"></i>
                 Show Videotron
             </a>
@@ -206,12 +249,12 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-<style>
-    table.dataTable thead th {
-        text-align: center !important;
-        vertical-align: middle !important;
-    }
-</style>
+    <style>
+        table.dataTable thead th {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+    </style>
 
     <script>
         $(document).ready(function () {

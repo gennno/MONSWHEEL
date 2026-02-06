@@ -19,12 +19,12 @@
 
             <!-- ADD SERVICE CARD -->
             <div id="addServiceCard" class="bg-gray-900 rounded-xl p-4 cursor-pointer
-                                            flex flex-col items-center justify-center gap-3
-                                            border-2 border-dashed border-green-500
-                                            hover:bg-gray-800 hover:border-green-400
-                                            transition text-center">
+                                                flex flex-col items-center justify-center gap-3
+                                                border-2 border-dashed border-green-500
+                                                hover:bg-gray-800 hover:border-green-400
+                                                transition text-center">
                 <div class="w-20 h-20 flex items-center justify-center rounded-full
-                                                bg-green-600/20 text-green-400 text-4xl">
+                                                    bg-green-600/20 text-green-400 text-4xl">
                     <i class="fa-solid fa-plus"></i>
                 </div>
 
@@ -55,15 +55,15 @@
                     };
                 @endphp
                 <div class="unit-card relative bg-gray-900 rounded-xl p-4 cursor-pointer
-                                                                             hover:bg-gray-800 hover:ring-2 {{ $statusRingClass }}
-                                                                             transition text-center flex flex-col items-center gap-3"
+                                                                                     hover:bg-gray-800 hover:ring-2 {{ $statusRingClass }}
+                                                                                     transition text-center flex flex-col items-center gap-3"
                     data-unit="{{ $unit->code }}" data-service-id="{{ $service?->id }}" data-status="{{ $status }}">
 
                     {{-- STATUS BADGE --}}
                     @if ($status)
                         <span
                             class="absolute top-2 left-2 z-10
-                                                                                                                            text-xs font-semibold px-2 py-0.5 rounded-full {{ $statusBadgeClass }}">
+                                                                                                                                        text-xs font-semibold px-2 py-0.5 rounded-full {{ $statusBadgeClass }}">
                             {{ strtoupper(str_replace('_', ' ', $status)) }}
                         </span>
                     @endif
@@ -229,7 +229,7 @@
                             <div>
                                 <label class="text-sm text-gray-400">{{ $label }}</label>
                                 <div class="flex gap-2">
-                                    <input type="time" id="edit_{{ $field }}"
+                                    <input type="time" step="60" id="edit_{{ $field }}"
                                         class="flex-1 rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                                     <button type="button" onclick="updateTime('{{ $field }}')"
                                         class="px-3 rounded-lg bg-green-600 hover:bg-green-500 font-bold">
@@ -255,30 +255,6 @@
                 </form>
             </div>
         </div>
-
-
-        <div id="handoverModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[60]">
-            <div class="bg-gray-900 rounded-xl w-full max-w-sm p-6" onclick="event.stopPropagation()">
-                <h3 class="text-lg font-semibold mb-4">Handover To</h3>
-
-                <select id="handoverUser" class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2 mb-4">
-                    <option value="">-- Select User --</option>
-                </select>
-
-                <div class="flex justify-end gap-2">
-                    <button type="button" onclick="closeHandoverModal()" class="px-4 py-2 bg-gray-700 rounded-lg">
-                        Cancel
-                    </button>
-
-                    <button type="button" onclick="confirmHandover()"
-                        class="px-4 py-2 bg-yellow-600 rounded-lg text-black font-semibold">
-                        Handover
-                    </button>
-                </div>
-            </div>
-        </div>
-
-
 
     </div>
 
@@ -358,29 +334,48 @@
                     'in_actual', 'qa1_actual', 'washing_actual',
                     'action_service_actual', 'action_backlog_actual', 'qa7_actual'
                 ].forEach(f => {
-                    document.getElementById('edit_' + f).value =
-                        s[f]?.substring(11, 16) ?? '';
+                    const input = document.getElementById('edit_' + f);
+                    const value = s[f];
+
+                    if (!value) {
+                        input.value = '';
+                        return;
+                    }
+
+                    let timePart = '';
+
+                    if (value.includes('T')) {
+                        // ISO format: 2026-02-06T22:10:00.000000Z
+                        timePart = value.split('T')[1].substring(0, 5);
+                    } else if (value.includes(' ')) {
+                        // SQL datetime: 2026-02-06 22:10:00
+                        timePart = value.split(' ')[1].substring(0, 5);
+                    } else {
+                        // Time only: 22:10:00
+                        timePart = value.substring(0, 5);
+                    }
+
+                    input.value = timePart;
                 });
 
                 // RESET ACTION
                 extraActionLeft.innerHTML = '';
                 extraActionRight.innerHTML = '';
 
-                if (status === 'process') {
-                    extraActionLeft.innerHTML = `
-                    <button onclick="handoverJob()"
-                        class="px-4 py-2 bg-yellow-500 rounded-lg font-semibold text-black">
-                        Handover Job
-                    </button>`;
-                }
+                // ALWAYS SHOW BOTH BUTTONS
+                extraActionLeft.innerHTML = `
+                        <button onclick="handoverJob(${serviceId})"
+                            class="px-4 py-2 bg-yellow-500 rounded-lg font-semibold text-black">
+                            Handover Job
+                        </button>
+                    `;
 
-                if (status === 'continue') {
-                    extraActionRight.innerHTML = `
-                    <button onclick="endJob()"
-                        class="px-4 py-2 bg-red-600 rounded-lg font-semibold">
-                        End Job
-                    </button>`;
-                }
+                extraActionRight.innerHTML = `
+                        <button onclick="endJob(${serviceId})"
+                            class="px-4 py-2 bg-red-600 rounded-lg font-semibold">
+                            End Job
+                        </button>
+                    `;
 
                 openEditModal();
             });
@@ -406,77 +401,39 @@
             alert('Time updated');
         }
     </script>
-
     <script>
-        let currentServiceId = null;
-
         async function handoverJob(serviceId) {
-            currentServiceId = serviceId;
+            const gl = document.getElementById('edit_gl').value;
+            const kapten = document.getElementById('edit_kapten').value;
 
-            // TUTUP EDIT MODAL
-            closeEditModal();
-
-            // FETCH USER
-            const res = await fetch('/monitoring/handover-users');
-            const users = await res.json();
-
-            const select = document.getElementById('handoverUser');
-            select.innerHTML = '<option value="">-- Select User --</option>';
-
-            users.forEach(u => {
-                select.innerHTML += `<option value="${u.id}">${u.name}</option>`;
-            });
-
-            // BUKA HANDOVER MODAL
-            const modal = document.getElementById('handoverModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-
-        function closeHandoverModal() {
-            document.getElementById('handoverModal').classList.add('hidden');
-            document.getElementById('handoverModal').classList.remove('flex');
-            currentServiceId = null;
-        }
-
-        async function confirmHandover() {
-            if (!currentServiceId) return;
-
-            const userId = document.getElementById('handoverUser').value;
-
-            if (!userId) {
-                alert('Please select user');
+            if (!gl && !kapten) {
+                alert('GL atau Kapten harus diisi');
                 return;
             }
 
             try {
-                const res = await fetch(`/monitoring/service/${currentServiceId}/handover`, {
-                    method: 'POST',
+                const res = await fetch(`/monitoring/service/${serviceId}/handover`, {
+                    method: 'PUT',
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ user_id: userId })
+                    body: JSON.stringify({
+                        gl,
+                        kapten
+                    })
                 });
 
                 if (!res.ok) throw new Error();
 
-                location.reload();
+                alert('Handover berhasil, status lanjut');
+                location.reload(); // supaya badge & warna update
             } catch {
-                alert('Failed to handover');
+                alert('Gagal handover');
             }
-
         }
-
-        document.getElementById('handoverModal').addEventListener('click', (e) => {
-            if (e.target.id === 'handoverModal') {
-                closeHandoverModal();
-            }
-        });
-
     </script>
-
     <script>
         async function endJob(serviceId) {
             if (!confirm('End this job?')) return;
@@ -497,7 +454,7 @@
                 alert('Failed to end job');
             }
         }
-    </script>
 
+    </script>
 
 @endsection

@@ -58,11 +58,18 @@
                                 </td>
 
                                 <td class="px-3 py-3 text-center border-r border-gray-700">
-                                    <span
-                                        class="px-2 py-0.5 rounded-full text-xs font-semibold
-                                                                    {{ $unit->status === 'Active' ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400' }}">
-                                        {{ $unit->status }}
-                                    </span>
+                                    @php
+    $statusMap = [
+        'active' => 'bg-green-600/20 text-green-400 ring-1 ring-green-500/40',
+        'service' => 'bg-yellow-600/20 text-yellow-300 ring-2 ring-yellow-400 animate-pulse',
+        'inactive' => 'bg-red-600/20 text-red-400 ring-1 ring-red-500/40',
+    ];
+@endphp
+
+<span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
+    {{ $statusMap[$unit->status] ?? 'bg-gray-600/20 text-gray-300' }}">
+    {{ $unit->status }}
+</span>
                                 </td>
 
                                 <td class="px-3 py-3 text-center border-r border-gray-700">

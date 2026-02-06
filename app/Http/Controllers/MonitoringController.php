@@ -53,22 +53,31 @@ public function store(Request $request)
 
     $service = Service::where('id', $validated['service_id'])
         ->where('status', 'plan')
+        ->with('unit')
         ->firstOrFail();
 
+    // Update service
     $service->update([
-        'gl' => $validated['gl'],
-        'kapten' => $validated['kapten'],
-        'bays' => $validated['bays'],
+        'gl' => $validated['gl'] ?? null,
+        'kapten' => $validated['kapten'] ?? null,
+        'bays' => $validated['bays'] ?? null,
 
-        'in_actual' => $validated['in_actual'],
-        'qa1_actual' => $validated['qa1_actual'],
-        'washing_actual' => $validated['washing_actual'],
-        'action_service_actual' => $validated['action_service_actual'],
-        'action_backlog_actual' => $validated['action_backlog_actual'],
-        'qa7_actual' => $validated['qa7_actual'],
+        'in_actual' => $validated['in_actual'] ?? null,
+        'qa1_actual' => $validated['qa1_actual'] ?? null,
+        'washing_actual' => $validated['washing_actual'] ?? null,
+        'action_service_actual' => $validated['action_service_actual'] ?? null,
+        'action_backlog_actual' => $validated['action_backlog_actual'] ?? null,
+        'qa7_actual' => $validated['qa7_actual'] ?? null,
 
         'status' => 'process',
     ]);
+
+    // 🔥 IMPORTANT: set unit status to service
+    if ($service->unit && $service->unit->isActive()) {
+        $service->unit->update([
+            'status' => 'service',
+        ]);
+    }
 
     return redirect()
         ->route('monitoring.index')
@@ -137,34 +146,23 @@ public function update(Request $request, Service $service)
 }
 
 
-public function handover(Service $service, Request $request)
+public function handover(Request $request, Service $service)
 {
-    $request->validate([
-        'user_id' => 'required|exists:users,id',
+    $data = $request->validate([
+        'gl' => 'nullable|string|max:255',
+        'kapten' => 'nullable|string|max:255',
     ]);
 
     $service->update([
-        'status'      => 'handover',
-        'shift'       => 2,
-        'created_by'  => $request->user_id, // penerima handover
-        'handover_by' => auth()->id(),       // pemberi handover
+        'gl' => $data['gl'],
+        'kapten' => $data['kapten'],
+        'status' => 'continue',
     ]);
 
     return response()->json([
-        'success' => true,
-        'message' => 'Service handed over successfully',
+        'message' => 'Handover success, status set to continue',
+        'status' => $service->status,
     ]);
-}
-
-
-public function handoverUsers()
-{
-    return response()->json(
-        User::where('role', '!=', 'admin')
-            ->select('id', 'name')
-            ->orderBy('name')
-            ->get()
-    );
 }
 public function done(Service $service, Request $request)
 {
@@ -178,48 +176,84 @@ public function showJson(Service $service)
 {
     return response()->json([
         'id' => $service->id,
+
+        // BASIC
         'service_date' => optional($service->service_date)->format('Y-m-d'),
         'shift' => $service->shift,
         'kapten' => $service->kapten,
         'gl' => $service->gl,
-        'qa1' => $service->qa1,
-        'note1' => $service->note1,
-        'washing' => $service->washing,
-        'note2' => $service->note2,
-        'action_service' => $service->action_service,
-        'note3' => $service->note3,
         'bays' => $service->bays,
-        'action_backlog' => $service->action_backlog,
-        'note4' => $service->note4,
-        'rfu' => $service->rfu,
-        'downtime_plan' => optional($service->downtime_plan)->format('Y-m-d\TH:i'),
-        'downtime_actual' => optional($service->downtime_actual)->format('Y-m-d\TH:i'),
-        'note5' => $service->note5,
         'status' => $service->status,
+
+        // TIME LOG (FOR <input type="time">)
+        'in_actual' => optional($service->in_actual)->format('H:i'),
+        'qa1_actual' => optional($service->qa1_actual)->format('H:i'),
+        'washing_actual' => optional($service->washing_actual)->format('H:i'),
+        'action_service_actual' => optional($service->action_service_actual)->format('H:i'),
+        'action_backlog_actual' => optional($service->action_backlog_actual)->format('H:i'),
+        'qa7_actual' => optional($service->qa7_actual)->format('H:i'),
+
+
+        // UNIT
         'unit' => [
             'id' => $service->unit->id,
             'code' => $service->unit->code,
         ],
     ]);
 }
+
 public function endJob(Service $service)
 {
-    // OPTIONAL: validasi status (recommended)
-    if ($service->status !== 'handover') {
+    // Prevent double end
+    if ($service->status === 'done') {
         return response()->json([
-            'message' => 'Service cannot be ended'
-        ], 422);
+            'message' => 'Service already completed'
+        ], 409);
     }
 
+    // Collect actual timestamps (washing is optional)
+    $times = collect([
+        $service->in_actual,
+        $service->qa1_actual,
+        $service->washing_actual,
+        $service->action_service_actual,
+        $service->action_backlog_actual,
+        $service->qa7_actual,
+    ])->filter();
+
+    $downtimeActualMinutes = 0;
+    $timeValues = $times->values();
+
+    for ($i = 0; $i < $timeValues->count() - 1; $i++) {
+        $start = Carbon::parse($timeValues[$i]);
+        $end   = Carbon::parse($timeValues[$i + 1]);
+
+        if ($end->greaterThan($start)) {
+            $downtimeActualMinutes += $start->diffInMinutes($end);
+        }
+    }
+
+    $downtimePlanMinutes = (int) $service->downtime_plan;
+
+    $remark = $downtimeActualMinutes > $downtimePlanMinutes
+        ? 'over'
+        : 'ok';
+
     $service->update([
-        'status'      => 'done',
-        'finished_at' => now(), // kalau ada kolom ini
+        'downtime_actual' => $downtimeActualMinutes,
+        'remark' => $remark,
+        'status' => 'done',
+        'completed_at' => now(),
     ]);
 
     return response()->json([
-        'success' => true
+        'message' => 'Job completed',
+        'status' => 'done',
+        'downtime_actual' => $downtimeActualMinutes,
+        'remark' => $remark,
     ]);
 }
+
 public function updateTime(Request $request, Service $service)
 {
     $request->validate([

@@ -55,16 +55,15 @@ Route::middleware(['auth'])->group(function () {
     [MonitoringController::class, 'updateTime']
 )->name('monitoring.service.updateTime');
 
-    Route::get('/monitoring/handover-users', [MonitoringController::class, 'handoverUsers']);
-    Route::post(
-        '/monitoring/service/{service}/handover',
-        [MonitoringController::class, 'handover']
-    )->name('monitoring.service.handover');
-    Route::post(
-        '/monitoring/service/{service}/end-job',
-        [MonitoringController::class, 'endJob']
-    )->name('monitoring.service.endJob');
+Route::put(
+    '/monitoring/service/{service}/handover',
+    [MonitoringController::class, 'handover']
+)->name('monitoring.service.handover');
 
+Route::post(
+    '/monitoring/service/{service}/end-job',
+    [MonitoringController::class, 'endJob']
+)->name('monitoring.service.endJob');
     
     Route::get('/dashboard/download', [DashboardController::class, 'download'])
         ->name('dashboard.download');

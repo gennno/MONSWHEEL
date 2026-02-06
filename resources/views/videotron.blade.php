@@ -3,7 +3,17 @@
 @section('title', 'Videotron - MONSWHEEL')
 
 @section('content')
+@php
+    function actualCellClass($field, $last) {
+        if (!$last) {
+            return 'bg-green-600/20';
+        }
 
+        return $field === $last
+            ? 'bg-green-600 text-white font-bold ring-2 ring-green-400'
+            : 'bg-green-600/20';
+    }
+@endphp
 <!-- FULLSCREEN BUTTON (TIDAK KE-REFRESH) -->
 <button
     id="fullscreenBtn"
