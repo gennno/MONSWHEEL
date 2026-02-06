@@ -50,6 +50,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/monitoring/service/{service}/json', [MonitoringController::class, 'showJson']);
 
+    Route::put(
+    '/monitoring/service/{service}/time',
+    [MonitoringController::class, 'updateTime']
+)->name('monitoring.service.updateTime');
+
     Route::get('/monitoring/handover-users', [MonitoringController::class, 'handoverUsers']);
     Route::post(
         '/monitoring/service/{service}/handover',

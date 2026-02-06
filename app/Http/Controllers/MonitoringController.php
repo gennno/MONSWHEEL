@@ -15,81 +15,66 @@ use Carbon\Carbon;
 class MonitoringController extends Controller
 {
     // Show monitoring page
-    public function index()
+
+
+        public function index()
     {
-        // Only units with active services
         $units = Unit::whereHas('activeService')
             ->with('activeService') // eager load active service
             ->orderBy('code')
             ->get();
 
-        return view('monitoring', compact('units'));
+        // 🔽 ambil service plan
+        $planServices = Service::where('status', 'plan')
+            ->with('unit')
+            ->orderBy('service_date')
+            ->get();
+
+        return view('monitoring', compact('units', 'planServices'));
     }
 
-    // Store new service
-    public function store(Request $request)
-    {
-        $request->validate([
-            'date'  => 'required|date',
-            'cn'    => 'required|exists:units,code',
-            'shift' => 'required|in:1,2',
-        ]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'service_id' => 'required|exists:services,id',
 
-        DB::transaction(function () use ($request) {
+        'gl' => 'nullable|string',
+        'kapten' => 'nullable|string',
 
-            $unit = Unit::where('code', $request->cn)->firstOrFail();
+        'in_actual' => 'nullable|date_format:H:i',
+        'qa1_actual' => 'nullable|date_format:H:i',
+        'washing_actual' => 'nullable|date_format:H:i',
+        'action_service_actual' => 'nullable|date_format:H:i',
+        'action_backlog_actual' => 'nullable|date_format:H:i',
+        'qa7_actual' => 'nullable|date_format:H:i',
 
-            // 🔴 Check if there is an existing active service
-            $oldService = Service::where('unit_id', $unit->id)
-                ->whereIn('status', ['open', 'handover', 'on_process', 'done'])
-                ->latest('created_at')
-                ->first();
+        'bays' => 'nullable|integer|min:1',
+    ]);
 
-            if ($oldService) {
-                // 🟡 Move old service to history
-                ServiceHistory::create([
-                    'unit_id'      => $oldService->unit_id,
-                    'service_date' => $oldService->service_date,
-                    'shift'        => $oldService->shift,
-                    'status'       => $oldService->status,
-                    'created_by'   => $oldService->created_by,
-                    'finished_at'  => now(),
-                    'data'         => $oldService->toArray(),
-                ]);
+    $service = Service::where('id', $validated['service_id'])
+        ->where('status', 'plan')
+        ->firstOrFail();
 
-                // 🔥 Delete old service
-                $oldService->delete();
-            }
+    $service->update([
+        'gl' => $validated['gl'],
+        'kapten' => $validated['kapten'],
+        'bays' => $validated['bays'],
 
-            // 🟢 Create new service
-            Service::create([
-                'unit_id'         => $unit->id,
-                'service_date'    => $request->date,
-                'shift'           => $request->shift,
-                'created_by'      => Auth::id(),
-                'kapten'          => $request->kapten,
-                'gl'              => $request->gl,
-                'qa1'             => $request->qa1,
-                'note1'           => $request->note1,
-                'washing'         => $request->washing,
-                'note2'           => $request->note2,
-                'action_service'  => $request->action_service,
-                'note3'           => $request->note3,
-                'bays'            => $request->bays,
-                'action_backlog'  => $request->action_backlog,
-                'note4'           => $request->note4,
-                'rfu'             => $request->rfu,
-                'downtime_plan'   => $request->downtime_plan,
-                'downtime_actual' => $request->downtime_actual,
-                'note5'           => $request->note5,
-                'status'          => 'open',
-            ]);
-        });
+        'in_actual' => $validated['in_actual'],
+        'qa1_actual' => $validated['qa1_actual'],
+        'washing_actual' => $validated['washing_actual'],
+        'action_service_actual' => $validated['action_service_actual'],
+        'action_backlog_actual' => $validated['action_backlog_actual'],
+        'qa7_actual' => $validated['qa7_actual'],
 
-        return redirect()
-            ->route('monitoring.index')
-            ->with('success', 'Service berhasil ditambahkan');
-    }
+        'status' => 'process',
+    ]);
+
+    return redirect()
+        ->route('monitoring.index')
+        ->with('success', 'Service started');
+}
+
     public function edit(Unit $unit)
 {
     $service = $unit->activeService;
@@ -234,6 +219,19 @@ public function endJob(Service $service)
     return response()->json([
         'success' => true
     ]);
+}
+public function updateTime(Request $request, Service $service)
+{
+    $request->validate([
+        'field' => 'required|string',
+        'value' => 'required|date_format:H:i',
+    ]);
+
+    $service->update([
+        $request->field => $request->value . ':00'
+    ]);
+
+    return response()->json(['ok' => true]);
 }
 
 }

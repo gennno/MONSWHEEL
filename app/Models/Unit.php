@@ -37,10 +37,10 @@ class Unit extends Model
     /**
      * Relationship: active service
      */
-    public function activeService()
-    {
-        return $this->hasOne(Service::class)
-            ->whereIn('status', ['open', 'handover', 'on_process', 'done'])
-            ->latest('created_at');
-    }
+public function activeService()
+{
+    return $this->hasOne(Service::class)
+        ->where('status', '!=', 'plan')
+        ->latest('created_at');
+}
 }
