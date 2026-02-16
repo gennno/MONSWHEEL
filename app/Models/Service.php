@@ -156,4 +156,25 @@ class Service extends Model
     {
         return $this->remark === 'ok';
     }
+
+public function getDowntimePlanFormattedAttribute()
+{
+    if (!$this->downtime_plan) return '-';
+
+    $hours = floor($this->downtime_plan / 60);
+    $minutes = $this->downtime_plan % 60;
+
+    return "{$hours}h {$minutes}m";
 }
+
+public function getDowntimeActualFormattedAttribute()
+{
+    if (!$this->downtime_actual) return '-';
+
+    $hours = floor($this->downtime_actual / 60);
+    $minutes = $this->downtime_actual % 60;
+
+    return "{$hours}h {$minutes}m";
+}
+
+    }

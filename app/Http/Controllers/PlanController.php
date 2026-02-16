@@ -46,7 +46,7 @@ public function store(Request $request)
 
         // 🔎 cari service aktif lama (CN sama)
         $oldService = Service::where('unit_id', $data['unit_id'])
-            ->whereIn('status', ['plan', 'process', 'continue'])
+            ->whereIn('status', ['plan', 'process', 'continue','done'])
             ->first();
 
         if ($oldService) {

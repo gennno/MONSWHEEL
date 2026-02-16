@@ -239,12 +239,20 @@ public function endJob(Service $service)
         ? 'over'
         : 'ok';
 
+    // 🔥 Update service
     $service->update([
         'downtime_actual' => $downtimeActualMinutes,
         'remark' => $remark,
         'status' => 'done',
         'completed_at' => now(),
     ]);
+
+    // 🔁 Return unit back to ACTIVE
+    if ($service->unit && $service->unit->isService()) {
+        $service->unit->update([
+            'status' => 'active',
+        ]);
+    }
 
     return response()->json([
         'message' => 'Job completed',

@@ -26,13 +26,13 @@ class DashboardController extends Controller
         */
 
         // Unit aktif
-        $totalUnit = Unit::where('status', 'active')->count();
+        $totalUnit = Unit::count();
 
         // Total semua service
         $totalService = Service::count();
 
         // JUMLAH UNIT YANG MASUK SERVICE
-        $totalServiceDone = Unit::where('status', 'service')->count();
+        $totalServiceDone = Service::where('status', 'process')->count();
 
         // Service selesai (DONE)
         $rfuReady = Service::where('status', 'done')->count();
@@ -92,7 +92,7 @@ public function videotronPartial()
     $services = Service::with('unit')->latest()->get();
 
     $totalService = Service::count();
-    $totalServiceDone = Service::where('status', 'done')->count();
+    $totalServiceDone = Service::where('status', 'process')->count();
     $rfuReady = Service::where('status', 'done')->count();
 
     return view('videotron._content', compact(

@@ -250,6 +250,8 @@
 
     <script>
         $(document).ready(function () {
+            
+        $.fn.dataTable.ext.errMode = 'none';
             $('#userTable').DataTable({
                 scrollX: true,
                 autoWidth: false,

@@ -246,6 +246,8 @@
 
     <script>
         $(document).ready(function () {
+            
+        $.fn.dataTable.ext.errMode = 'none';
             $('#unitTable').DataTable({
                 scrollX: true,
                 autoWidth: false,

@@ -32,7 +32,10 @@
 
 <script>
     function initTable() {
+        
+        $.fn.dataTable.ext.errMode = 'none';
         if ($.fn.DataTable.isDataTable('#serviceTable')) {
+            
             $('#serviceTable').DataTable().destroy();
         }
 

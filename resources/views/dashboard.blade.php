@@ -186,10 +186,13 @@
                             </td>
 
                             <!-- Downtime -->
-                            <td class="px-3 py-3 text-center">{{ $service->downtime_plan ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center bg-red-600/20 font-bold border-r border-gray-700">
-                                {{ $service->downtime_actual ?? '-' }}
-                            </td>
+<td class="px-3 py-3 text-center">
+    {{ $service->downtime_plan_formatted }}
+</td>
+
+<td class="px-3 py-3 text-center bg-red-600/20 font-bold border-r border-gray-700">
+    {{ $service->downtime_actual_formatted }}
+</td>
 
                             <!-- Remark -->
                             <td class="px-4 py-3 text-center">
@@ -258,6 +261,7 @@
 
     <script>
         $(document).ready(function () {
+            $.fn.dataTable.ext.errMode = 'none';
             $('#serviceTable').DataTable({
                 scrollX: true,
                 autoWidth: false,

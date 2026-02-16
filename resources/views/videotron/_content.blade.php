@@ -62,9 +62,9 @@
         <div class="text-3xl lg:text-4xl font-bold mt-2">
             {{ now()->format('d M Y') }}
         </div>
-        <div class="text-xl lg:text-2xl text-gray-300 mt-1">
-            {{ now()->format('H:i') }}
-        </div>
+<div class="text-xl lg:text-2xl text-gray-300 mt-1">
+    {{ now('UTC')->format('H:i') }}
+</div>
     </div>
 
     <!-- TOTAL SERVICE -->
@@ -130,9 +130,9 @@
                     <!-- ROW 2 : PLAN / ACTUAL -->
                     <tr>
                         @for ($i = 0; $i < 7; $i++)
-                            <th class="px-3 py-2 border border-gray-700 text-center">Plan</th>
-                            <th class="px-3 py-2 border border-gray-700 text-center">Actual</th>
-                        @endfor
+    <th class="px-2 py-2  border border-gray-700 text-center">Plan</th>
+    <th class="px-2 py-2  border border-gray-700 text-center">Actual</th>
+@endfor
                     </tr>
 
                 </thead>
@@ -191,8 +191,11 @@
                             <td class="px-4 py-3 text-cente border-r border-gray-700">{{ $service->gl ?? '-' }}</td>
 
                             <!-- Backlog -->
-<td class="px-4 py-3 border-r border-gray-700 backlog-cell">
-    {{ $service->backlog_item ?? '-' }}
+<td class="px-4 py-3 border-r border-gray-700">
+    <div class="overflow-hidden text-ellipsis"
+         style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+        {{ $service->backlog_item ?? '-' }}
+    </div>
 </td>
                             <!-- Kapten -->
                             <td class="px-4 py-3 text-center border-r border-gray-700">{{ $service->kapten ?? '-' }}</td>
@@ -201,52 +204,57 @@
                             <td class="px-4 py-3 text-center border-r border-gray-700">{{ $service->bays ?? '-' }}</td>
 
                             <!-- IN -->
-                            <td class="px-3 py-3 text-center ">{{ $service->in_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center border-r border-gray-700
+                            <td class="px-2 py-3 text-center ">{{ $service->in_plan?->format('H:i') ?? '-' }}</td>
+                            <td class="px-2 py-3 text-center  border-r border-gray-700
                                 {{ actualCellClass('in_actual', $lastActualField) }}">
                                 {{ $service->in_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- QA 1 -->
-                            <td class="px-3 py-3 text-center">{{ $service->qa1_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center border-r border-gray-700
+                            <td class="px-2 py-3 text-center ">{{ $service->qa1_plan?->format('H:i') ?? '-' }}</td>
+                            <td class="px-2 py-3 text-center  border-r border-gray-700
                                 {{ actualCellClass('qa1_actual', $lastActualField) }}">
                                 {{ $service->qa1_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- Washing -->
-                            <td class="px-3 py-3 text-center">{{ $service->washing_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center border-r border-gray-700
+                            <td class="px-2 py-3 text-center ">{{ $service->washing_plan?->format('H:i') ?? '-' }}</td>
+                            <td class="px-2 py-3 text-center  border-r border-gray-700
                                 {{ actualCellClass('washing_actual', $lastActualField) }}">
                                 {{ $service->washing_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- Action Service -->
-                            <td class="px-3 py-3 text-center">{{ $service->action_service_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center border-r border-gray-700
+                            <td class="px-2 py-3 text-center ">{{ $service->action_service_plan?->format('H:i') ?? '-' }}</td>
+                            <td class="px-2 py-3 text-center  border-r border-gray-700
                                 {{ actualCellClass('action_service_actual', $lastActualField) }}">
                                 {{ $service->action_service_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- Action Backlog -->
-                            <td class="px-3 py-3 text-center">{{ $service->action_backlog_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center border-r border-gray-700
+                            <td class="px-2 py-3 text-center ">{{ $service->action_backlog_plan?->format('H:i') ?? '-' }}</td>
+                            <td class="px-2 py-3 text-center  border-r border-gray-700
                                 {{ actualCellClass('action_backlog_actual', $lastActualField) }}">
                                 {{ $service->action_backlog_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- QA 7 -->
-                            <td class="px-3 py-3 text-center">{{ $service->qa7_plan?->format('H:i') ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center border-r border-gray-700
+                            <td class="px-2 py-3 text-center ">{{ $service->qa7_plan?->format('H:i') ?? '-' }}</td>
+                            <td class="px-2 py-3 text-center  border-r border-gray-700
                                 {{ actualCellClass('qa7_actual', $lastActualField) }}">
                                 {{ $service->qa7_actual?->format('H:i') ?? '-' }}
                             </td>
 
                             <!-- Downtime -->
-                            <td class="px-3 py-3 text-center">{{ $service->downtime_plan ?? '-' }}</td>
-                            <td class="px-3 py-3 text-center bg-red-600/20 font-bold border-r border-gray-700">
-                                {{ $service->downtime_actual ?? '-' }}
-                            </td>
+<td class="px-2 py-3 text-center ">
+    {{ $service->downtime_plan_formatted }}
+</td>
+
+<td class="px-3 py-3 text-center  bg-red-600/20 font-bold border-r border-gray-700">
+    {{ $service->downtime_actual_formatted }}
+</td>
+
+                            
 
                             <!-- Remark -->
                             <td class="px-4 py-3 text-center">
