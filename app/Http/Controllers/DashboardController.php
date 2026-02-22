@@ -19,29 +19,18 @@ class DashboardController extends Controller
 
     public function index()
     {
-        /*
-        |----------------------------------------------------------------------
-        | DASHBOARD CARDS
-        |----------------------------------------------------------------------
-        */
 
-        // Unit aktif
         $totalUnit = Unit::count();
 
-        // Total semua service
+
         $totalService = Service::count();
 
-        // JUMLAH UNIT YANG MASUK SERVICE
+
         $totalServiceDone = Service::where('status', 'process')->count();
 
-        // Service selesai (DONE)
         $rfuReady = Service::where('status', 'done')->count();
 
-        /*
-        |----------------------------------------------------------------------
-        | TABLE DATA (SEMUA SERVICE)
-        |----------------------------------------------------------------------
-        */
+
 
         $services = Service::with('unit')
             ->orderBy('created_at', 'asc')
@@ -58,22 +47,13 @@ class DashboardController extends Controller
 
     public function videotron()
     {
-        /*
-        |----------------------------------------------------------------------
-        | DASHBOARD CARDS
-        |----------------------------------------------------------------------
-        */
+
 
         $totalUnit = Unit::where('status', 'active')->count();
         $totalService = Service::count();
         $totalServiceDone = Unit::where('status', 'service')->count();
         $rfuReady = Service::where('status', 'done')->count();
 
-        /*
-        |----------------------------------------------------------------------
-        | TABLE DATA
-        |----------------------------------------------------------------------
-        */
 
         $services = Service::with('unit')
             ->orderBy('created_at', 'asc')

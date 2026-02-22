@@ -1,9 +1,9 @@
 <style>
     /* FORCE TABLE FULL WIDTH */
-    #serviceTable {
+    /* #serviceTable {
         width: 100% !important;
         table-layout: fixed;
-    }
+    } */
 
     /* HEADER */
     #serviceTable thead th {
@@ -11,7 +11,7 @@
         padding: 6px 4px !important;
         text-align: center;
         vertical-align: middle;
-        white-space: nowrap;
+        /* white-space: nowrap; */
     }
 
     /* BODY */
@@ -19,24 +19,24 @@
         font-size: 12px;
         padding: 6px 4px !important;
         text-align: center;
-        white-space: nowrap;
+        /* white-space: nowrap; */
     }
 
     /* STATUS BADGE SMALLER */
-    #serviceTable .status-badge {
+    /* #serviceTable .status-badge {
         font-size: 10px;
         padding: 2px 8px;
-    }
+    } */
 
     /* BACKLOG ITEM WRAP */
-#serviceTable .backlog-cell {
+/* #serviceTable .backlog-cell {
     white-space: normal !important;
     word-break: break-word;
     line-height: 1.3;
-    text-align: left;      /* lebih enak dibaca */
+    text-align: left;     
     padding-left: 8px;
     padding-right: 8px;
-}
+} */
 
 </style>
 @php
@@ -112,7 +112,6 @@
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">CN</th>
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">Status</th>
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">GL</th>
-                        <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center backlog-cell">Backlog Item</th>
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">Kapten</th>
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">Bays</th>
                         <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">IN</th>
@@ -190,13 +189,6 @@
                             <!-- GL -->
                             <td class="px-4 py-3 text-cente border-r border-gray-700">{{ $service->gl ?? '-' }}</td>
 
-                            <!-- Backlog -->
-<td class="px-4 py-3 border-r border-gray-700">
-    <div class="overflow-hidden text-ellipsis"
-         style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
-        {{ $service->backlog_item ?? '-' }}
-    </div>
-</td>
                             <!-- Kapten -->
                             <td class="px-4 py-3 text-center border-r border-gray-700">{{ $service->kapten ?? '-' }}</td>
 

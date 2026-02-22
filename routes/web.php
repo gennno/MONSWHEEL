@@ -7,6 +7,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\MonitoringController;
+use App\Http\Controllers\ServiceHistoryController;
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])
     ->name('login');
@@ -37,6 +38,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/units/{unit}', [UnitController::class, 'show'])->name('units.show');
     Route::put('/units/{unit}', [UnitController::class, 'update'])->name('units.update');
     Route::delete('/units/{unit}', [UnitController::class, 'destroy'])->name('units.destroy');
+
+    
+    Route::get('/history', [ServiceHistoryController::class, 'index'])->name('history.index');
+
+    Route::delete('/history/{history}', [ServiceHistoryController::class, 'destroy'])
+    ->name('history.destroy');
+
+    Route::get('/history/export', [ServiceHistoryController::class, 'export'])
+    ->name('history.export');
 
     Route::get('/monitoring', [MonitoringController::class, 'index'])
         ->name('monitoring.index');

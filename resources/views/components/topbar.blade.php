@@ -49,6 +49,9 @@
             <a href="/units" class="menu-item">🚚 Unit</a>
         </li>
 
+        <li>
+            <a href="/history" class="menu-item">📜 Service History</a>
+        </li>
         {{-- SETTINGS: SEMUA ROLE KECUALI ADMIN --}}
         @if ($user->role !== 'admin')
             <li>
