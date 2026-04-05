@@ -151,11 +151,13 @@ public function handover(Request $request, Service $service)
     $data = $request->validate([
         'gl' => 'nullable|string|max:255',
         'kapten' => 'nullable|string|max:255',
+        'bays' => 'nullable|integer|min:1',
     ]);
 
     $service->update([
-        'gl' => $data['gl'],
-        'kapten' => $data['kapten'],
+        'gl' => $data['gl'] ?? null,
+        'kapten' => $data['kapten'] ?? null,
+        'bays' => $data['bays'] ?? null, // ✅ tambah ini
         'status' => 'continue',
     ]);
 

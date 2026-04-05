@@ -151,7 +151,7 @@
                         <div>
                             <label class="text-sm text-gray-400">Unit</label>
                             <select name="unit_id" required
-                                class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
+    class="unit-select w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                                 <option value="">-- Select Unit --</option>
                                 @foreach ($units as $unit)
                                     <option value="{{ $unit->id }}">
@@ -270,7 +270,7 @@
                         <div>
                             <label class="text-sm text-gray-400">Unit</label>
                             <select name="unit_id" required
-                                class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
+    class="unit-select w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                                 <option value="">-- Select Unit --</option>
                                 @foreach ($units as $unit)
                                     <option value="{{ $unit->id }}">
@@ -617,5 +617,12 @@
             el.addEventListener('input', calculateEditDowntime);
         });
 </script>
-
+<script>
+    $(document).ready(function () {
+        $('.unit-select').select2({
+            placeholder: "-- Select Unit --",
+            width: '100%',
+        });
+    });
+</script>
 @endsection

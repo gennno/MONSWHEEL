@@ -38,6 +38,7 @@ class ServiceHistory extends Model
         'qa1_actual',
         'washing_plan',
         'washing_actual',
+        'washing_remark',
         'action_service_plan',
         'action_service_actual',
         'action_backlog_plan',
@@ -48,6 +49,7 @@ class ServiceHistory extends Model
         // Downtime
         'downtime_plan',
         'downtime_actual',
+        'downtime_countdown',
 
         // Notes
         'note_in',

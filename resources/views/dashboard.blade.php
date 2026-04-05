@@ -80,7 +80,7 @@
                             @endif
 
                                 @if ($i === 6)
-                                    <th class="px-3 py-2 border border-gray-700 text-center">Countdown</th>
+                                    <th class="px-3 py-2 border border-gray-700 text-center">Count</th>
                                 @endif
                         @endfor
                     </tr>

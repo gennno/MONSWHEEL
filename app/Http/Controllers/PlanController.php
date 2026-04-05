@@ -39,8 +39,7 @@ public function store(Request $request)
         'qa7_plan' => 'required|date',
 
         'downtime_plan' => 'nullable|integer|min:0|max:32767',
-        'downtime_countdown' => 'nullable|integer|min:0|max:32767', // ✅ NEW
-        'washing_remark' => 'nullable|in:ok,over', // ✅ NEW
+        'downtime_countdown' => 'nullable|integer|min:0|max:32767',
 
         'backlog_item' => 'nullable|string',
         'status' => 'required|in:plan',
@@ -127,15 +126,17 @@ public function update(Request $request, Service $service)
         'service_date' => 'required|date',
         'unit_id' => 'required|exists:units,id',
         
-        'in_plan' => 'required|date_format:H:i',
-        'qa1_plan' => 'nullable|date_format:H:i',
-        'washing_plan' => 'nullable|date_format:H:i',
-        'action_service_plan' => 'nullable|date_format:H:i',
-        'action_backlog_plan' => 'nullable|date_format:H:i',
-        'qa7_plan' => 'required|date_format:H:i',
+        'in_plan' => 'required|date',
+        'qa1_plan' => 'nullable|date',
+        'washing_plan' => 'nullable|date',
+        'action_service_plan' => 'nullable|date',
+        'action_backlog_plan' => 'nullable|date',
+        'qa7_plan' => 'required|date',
+
+        'downtime_plan' => 'nullable|integer|min:0|max:32767',
+        'downtime_countdown' => 'nullable|integer|min:0|max:32767', // ✅ NEW
 
         'backlog_item' => 'nullable|string',
-        'downtime_plan' => 'required|integer|min:0|max:32767',
         'status' => 'required|in:plan',
     ]);
 

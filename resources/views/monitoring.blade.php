@@ -92,8 +92,8 @@
                     <!-- SERVICE PLAN (CN) -->
                     <div>
                         <label class="text-sm text-gray-400">CN / Plan Service</label>
-                        <select name="service_id" class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2"
-                            required>
+                                                    <select name="service_id" required
+    class="unit-select w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                             <option value="">-- Select Plan --</option>
                             @foreach ($planServices as $plan)
                                 <option value="{{ $plan->id }}">
@@ -214,7 +214,7 @@
                                             <!-- BAYS -->
                     <div>
                         <label class="text-sm text-gray-400">Bays</label>
-                        <input type="number" name="bays" min="1"
+                        <input type="number" id="edit_bays"  min="1"
                             class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                     </div>
                     </div>
@@ -335,6 +335,7 @@
                 edit_cn.value = s.unit?.code ?? '';
                 edit_gl.value = s.gl ?? '';
                 edit_kapten.value = s.kapten ?? '';
+                edit_bays.value = s.bays ?? '';
 
                 // TIME (HH:mm)
                 [
@@ -463,5 +464,12 @@
         }
 
     </script>
-
+<script>
+    $(document).ready(function () {
+        $('.unit-select').select2({
+            placeholder: "-- Select Service --",
+            width: '100%',
+        });
+    });
+</script>
 @endsection
