@@ -127,19 +127,20 @@
 
         </div>
 
-        <div id="addPlanModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+<div id="addPlanModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
 
-            <div class="bg-gray-900 rounded-xl w-full max-w-3xl p-6" onclick="event.stopPropagation()">
+    <div class="bg-gray-900 rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6"
+         onclick="event.stopPropagation()">
 
-                <h3 class="text-lg font-semibold mb-4">
-                    Add Plan Service
-                </h3>
+        <h3 class="text-lg font-semibold mb-4">
+            Add Plan Service
+        </h3>
 
-                <form method="POST" action="{{ route('plans.store') }}" id="planForm">
-                    @csrf
+        <form method="POST" action="{{ route('plans.store') }}" id="planForm">
+            @csrf
 
                     <!-- ROW 1 -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 
                         <div>
                             <label class="text-sm text-gray-400">Service Date</label>
@@ -160,55 +161,61 @@
                             </select>
                         </div>
 
-                        <div>
-                            <label class="text-sm text-gray-400">Backlog Item</label>
-                            <input name="backlog_item"
-                                class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
-                        </div>
 
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-4">
+
+                    <div>
+                        <label class="text-sm text-gray-400">Backlog Item</label>
+                        <textarea name="backlog_item"
+                            rows="3"
+                            class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2"></textarea>
+                    </div>
                     </div>
 
                     <!-- ROW 2 -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
 
                         <div>
                             <label class="text-sm text-gray-400">IN Plan</label>
-                            <input id="in_plan" type="time" name="in_plan" step="60"
+                            <input id="in_plan" type="datetime-local" name="in_plan" 
                                 class="time-input w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
                         <div>
                             <label class="text-sm text-gray-400">QA1 Plan</label>
-                            <input type="time" name="qa1_plan" id="qa1_plan" step="60"
+                            <input type="datetime-local" name="qa1_plan" id="qa1_plan" step="60"
                                 class="time-input w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
                         <div>
                             <label class="text-sm text-gray-400">Washing Plan</label>
-                            <input type="time" name="washing_plan" step="60"
+                            <input type="datetime-local" name="washing_plan" step="60"
                                 class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
-                        <div>
-                            <label class="text-sm text-gray-400">Action Service</label>
-                            <input type="time" name="action_service_plan" step="60"
-                                class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
-                        </div>
+                       
 
                     </div>
 
                     <!-- ROW 3 -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+
+                         <div>
+                            <label class="text-sm text-gray-400">Action Service</label>
+                            <input type="datetime-local" name="action_service_plan" step="60"
+                                class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
+                        </div>
 
                         <div>
                             <label class="text-sm text-gray-400">Action Backlog</label>
-                            <input type="time" name="action_backlog_plan" step="60"
+                            <input type="datetime-local" name="action_backlog_plan" step="60"
                                 class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
                         <div>
                             <label class="text-sm text-gray-400">QA7 Plan</label>
-                            <input type="time" name="qa7_plan" id="qa7_plan" step="60"
+                            <input type="datetime-local" name="qa7_plan" id="qa7_plan" step="60"
                                 class="time-input w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
@@ -286,25 +293,25 @@
 
                         <div>
                             <label class="text-sm text-gray-400">IN Plan</label>
-                            <input id="in_plan" type="time" name="in_plan" step="60"
+                            <input id="in_plan" type="datetime-local" name="in_plan" step="60"
                                 class="time-input w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
                         <div>
                             <label class="text-sm text-gray-400">QA1 Plan</label>
-                            <input type="time" name="qa1_plan" id="qa1_plan" step="60"
+                            <input type="datetime-local" name="qa1_plan" id="qa1_plan" step="60"
                                 class="time-input w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
                         <div>
                             <label class="text-sm text-gray-400">Washing Plan</label>
-                            <input type="time" name="washing_plan" step="60"
+                            <input type="datetime-local" name="washing_plan" step="60"
                                 class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
                         <div>
                             <label class="text-sm text-gray-400">Action Service</label>
-                            <input type="time" name="action_service_plan" step="60"
+                            <input type="datetime-local" name="action_service_plan" step="60"
                                 class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
@@ -315,13 +322,13 @@
 
                         <div>
                             <label class="text-sm text-gray-400">Action Backlog</label>
-                            <input type="time" name="action_backlog_plan" step="60"
+                            <input type="datetime-local" name="action_backlog_plan" step="60"
                                 class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
                         <div>
                             <label class="text-sm text-gray-400">QA7 Plan</label>
-                            <input type="time" name="qa7_plan" id="qa7_plan" step="60"
+                            <input type="datetime-local" name="qa7_plan" id="qa7_plan" step="60"
                                 class="time-input w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
 
@@ -463,126 +470,152 @@
             return confirm(`Delete Plan "${code}"?\nThis action cannot be undone.`);
         }
     </script>
-    <script>
-        function timeToMinutes(time) {
-            if (!time) return null;
-            const [h, m] = time.split(':').map(Number);
-            return h * 60 + m;
+<script>
+    function toDate(datetime) {
+        if (!datetime) return null;
+        return new Date(datetime);
+    }
+
+    function calculateDowntime() {
+
+        const steps = [
+            document.querySelector('[name="in_plan"]')?.value,
+            document.querySelector('[name="qa1_plan"]')?.value,
+            document.querySelector('[name="washing_plan"]')?.value,
+            document.querySelector('[name="action_service_plan"]')?.value,
+            document.querySelector('[name="action_backlog_plan"]')?.value,
+            document.querySelector('[name="qa7_plan"]')?.value,
+        ];
+
+        // convert ke Date object
+        const times = steps
+            .map(toDate)
+            .filter(t => t !== null);
+
+        if (times.length < 2) return;
+
+        let total = 0;
+
+        for (let i = 1; i < times.length; i++) {
+            const prev = times[i - 1];
+            const current = times[i];
+
+            let diff = (current - prev) / (1000 * 60); // ms → menit
+
+            // safety (kalau urutan salah)
+            if (diff < 0) continue;
+
+            total += diff;
         }
 
-        function calculateDowntime() {
+        total = Math.floor(total);
 
-            const steps = [
-                document.querySelector('[name="in_plan"]')?.value,
-                document.querySelector('[name="qa1_plan"]')?.value,
-                document.querySelector('[name="washing_plan"]')?.value,
-                document.querySelector('[name="action_service_plan"]')?.value,
-                document.querySelector('[name="action_backlog_plan"]')?.value,
-                document.querySelector('[name="qa7_plan"]')?.value,
-            ];
+        document.getElementById('downtime_plan').value = total;
+        document.getElementById('downtime_plan_hidden').value = total;
+    }
 
-            // convert to minutes, skip empty
-            const times = steps
-                .map(timeToMinutes)
-                .filter(t => t !== null);
+    // realtime update (datetime-local)
+    document.querySelectorAll('input[type="datetime-local"]')
+        .forEach(el => el.addEventListener('change', calculateDowntime));
+</script>
 
-            if (times.length < 2) return;
+<script>
+    function formatDatetimeLocal(value) {
+        if (!value) return '';
 
-            let total = 0;
-            let prev = times[0];
+        const date = new Date(value);
 
-            for (let i = 1; i < times.length; i++) {
-                let current = times[i];
+        const pad = (n) => n.toString().padStart(2, '0');
 
-                // ⏭️ LINTAS HARI
-                if (current <= prev) {
-                    current += 24 * 60;
-                }
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
 
-                total += current - prev;
-                prev = current;
+    async function openEditPlan(id) {
+        const res = await fetch(`/plans/${id}`);
+        const data = await res.json();
+
+        const form = document.getElementById('editPlanForm');
+        form.action = `/plans/${id}`;
+
+        for (const key in data) {
+            const input = form.querySelector(`[name="${key}"]`);
+            if (!input) continue;
+
+            if (input.type === 'datetime-local' && data[key]) {
+                input.value = formatDatetimeLocal(data[key]);
+
+            } else if (input.type === 'date' && data[key]) {
+                input.value = data[key].substring(0, 10);
+
+            } else {
+                input.value = data[key] ?? '';
             }
-
-            document.getElementById('downtime_plan').value = total;
-            document.getElementById('downtime_plan_hidden').value = total;
         }
 
-        // realtime update
-        document.querySelectorAll('input[type="time"]')
-            .forEach(el => el.addEventListener('change', calculateDowntime));
-    </script>
+        document.getElementById('edit_downtime_plan').value = data.downtime_plan ?? 0;
+        document.getElementById('edit_downtime_plan_hidden').value = data.downtime_plan ?? 0;
 
-    <script>
-        async function openEditPlan(id) {
-            const res = await fetch(`/plans/${id}`);
-            const data = await res.json();
+        toggleModal('editPlanModal', true);
 
-            const form = document.getElementById('editPlanForm');
-            form.action = `/plans/${id}`;
+        // recalc downtime setelah isi form
+        calculateEditDowntime();
+        bindEditDowntime();
+    }
 
-            for (const key in data) {
-                const input = form.querySelector(`[name="${key}"]`);
-                if (!input) continue;
+    function closeEditPlan() {
+        toggleModal('editPlanModal', false);
+    }
+</script>
+<script>
+    function toDate(value) {
+        if (!value) return null;
+        return new Date(value);
+    }
 
-                if (input.type === 'time' && data[key]) {
-                    input.value = data[key].substring(0, 5); // HH:mm
-                } else if (input.type === 'date' && data[key]) {
-                    input.value = data[key].substring(0, 10);
-                } else {
-                    input.value = data[key] ?? '';
-                }
-            }
+    function calculateEditDowntime() {
+        const form = document.getElementById('editPlanForm');
 
-            document.getElementById('edit_downtime_plan').value = data.downtime_plan ?? 0;
-            document.getElementById('edit_downtime_plan_hidden').value = data.downtime_plan ?? 0;
+        const steps = [
+            form.querySelector('[name="in_plan"]')?.value,
+            form.querySelector('[name="qa1_plan"]')?.value,
+            form.querySelector('[name="washing_plan"]')?.value,
+            form.querySelector('[name="action_service_plan"]')?.value,
+            form.querySelector('[name="action_backlog_plan"]')?.value,
+            form.querySelector('[name="qa7_plan"]')?.value,
+        ];
 
-            toggleModal('editPlanModal', true);
-            bindEditDowntime();
+        const times = steps
+            .map(toDate)
+            .filter(t => t !== null);
+
+        if (times.length < 2) return;
+
+        let total = 0;
+
+        for (let i = 1; i < times.length; i++) {
+            const prev = times[i - 1];
+            const current = times[i];
+
+            let diff = (current - prev) / (1000 * 60); // ms → menit
+
+            // safety kalau urutan salah
+            if (diff < 0) continue;
+
+            total += diff;
         }
 
+        total = Math.floor(total);
 
+        document.getElementById('edit_downtime_plan').value = total;
+        document.getElementById('edit_downtime_plan_hidden').value = total;
+    }
 
-        function closeEditPlan() {
-            toggleModal('editPlanModal', false);
-        }
-    </script>
-
-    <script>
-        function calculateEditDowntime() {
-            const form = document.getElementById('editPlanForm');
-
-            const steps = [
-                form.querySelector('[name="in_plan"]')?.value,
-                form.querySelector('[name="qa1_plan"]')?.value,
-                form.querySelector('[name="washing_plan"]')?.value,
-                form.querySelector('[name="action_service_plan"]')?.value,
-                form.querySelector('[name="action_backlog_plan"]')?.value,
-                form.querySelector('[name="qa7_plan"]')?.value,
-            ];
-
-            const times = steps
-                .map(t => t ? timeToMinutes(t) : null)
-                .filter(t => t !== null);
-
-            if (times.length < 2) return;
-
-            let total = 0;
-            let prev = times[0];
-
-            for (let i = 1; i < times.length; i++) {
-                let cur = times[i];
-                if (cur <= prev) cur += 1440; // lintas hari
-                total += cur - prev;
-                prev = cur;
-            }
-
-            document.getElementById('edit_downtime_plan').value = total;
-            document.getElementById('edit_downtime_plan_hidden').value = total;
-        }
-
-        document.querySelectorAll('#editPlanForm input[type="time"]')
-            .forEach(el => el.addEventListener('change', calculateEditDowntime));
-    </script>
-
+    // realtime update (EDIT FORM)
+    document.querySelectorAll('#editPlanForm input[type="datetime-local"]')
+        .forEach(el => {
+            el.addEventListener('change', calculateEditDowntime);
+            el.addEventListener('input', calculateEditDowntime);
+        });
+</script>
 
 @endsection

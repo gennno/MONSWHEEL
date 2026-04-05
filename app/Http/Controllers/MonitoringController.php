@@ -269,11 +269,95 @@ public function updateTime(Request $request, Service $service)
         'value' => 'required|date_format:H:i',
     ]);
 
+    $field = $request->field;
+    $value = $request->value . ':00';
+
+    // ✅ update field utama dulu
     $service->update([
-        $request->field => $request->value . ':00'
+        $field => $value
     ]);
 
-    return response()->json(['ok' => true]);
-}
+    $service->refresh(); // ambil data terbaru
 
+    /*
+    |--------------------------------------------------------------------------
+    | 🔥 1. HITUNG DOWNTIME COUNTDOWN (SISA)
+    |--------------------------------------------------------------------------
+    */
+
+    $times = collect([
+        $service->in_actual,
+        $service->qa1_actual,
+        $service->washing_actual,
+        $service->action_service_actual,
+        $service->action_backlog_actual,
+        $service->qa7_actual,
+    ])->filter()->values();
+
+    $elapsed = 0;
+
+    for ($i = 0; $i < $times->count() - 1; $i++) {
+        $start = Carbon::parse($times[$i]);
+        $end   = Carbon::parse($times[$i + 1]);
+
+        if ($end->greaterThan($start)) {
+            $elapsed += $start->diffInMinutes($end);
+        }
+    }
+
+    // kalau masih proses, tambahkan dari last → now
+    if ($times->isNotEmpty()) {
+        $last = Carbon::parse($times->last());
+        $now = now();
+
+        if ($now->greaterThan($last)) {
+            $elapsed += $last->diffInMinutes($now);
+        }
+    }
+
+    $downtimePlan = (int) $service->downtime_plan;
+    $countdown = max($downtimePlan - $elapsed, 0);
+
+    /*
+    |--------------------------------------------------------------------------
+    | 🔥 2. WASHING DURATION → TRIGGER DI ACTION SERVICE
+    |--------------------------------------------------------------------------
+    */
+
+    $washingDuration = null;
+
+    if ($field === 'action_service_actual') {
+        if ($service->washing_actual && $service->action_service_actual) {
+
+            $start = Carbon::parse($service->washing_actual);
+            $end   = Carbon::parse($service->action_service_actual);
+
+            if ($end->greaterThan($start)) {
+                $washingDuration = $start->diffInMinutes($end);
+            }
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 🔥 SAVE UPDATE TAMBAHAN
+    |--------------------------------------------------------------------------
+    */
+
+    $updateData = [
+        'downtime_countdown' => $countdown,
+    ];
+
+    if (!is_null($washingDuration)) {
+        $updateData['washing_remark'] = $washingDuration;
+    }
+
+    $service->update($updateData);
+
+    return response()->json([
+        'ok' => true,
+        'countdown' => $countdown,
+        'washing_duration' => $washingDuration
+    ]);
+}
 }

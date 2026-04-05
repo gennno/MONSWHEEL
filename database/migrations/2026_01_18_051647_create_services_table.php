@@ -22,27 +22,31 @@ return new class extends Migration
             $table->string('backlog_item')->nullable();
 
             // ===== TIME LOG (PLAN vs ACTUAL) =====
-            $table->time('in_plan')->nullable();
-            $table->time('in_actual')->nullable();
+            $table->datetime('in_plan')->nullable();
+            $table->datetime('in_actual')->nullable();
 
-            $table->time('qa1_plan')->nullable();
-            $table->time('qa1_actual')->nullable();
+            $table->datetime('qa1_plan')->nullable();
+            $table->datetime('qa1_actual')->nullable();
 
-            $table->time('washing_plan')->nullable();
-            $table->time('washing_actual')->nullable();
+            $table->datetime('washing_plan')->nullable();
+            $table->datetime('washing_actual')->nullable();
+            
+            $table->unsignedSmallInteger('washing_remark')->nullable();
 
-            $table->time('action_service_plan')->nullable();
-            $table->time('action_service_actual')->nullable();
+            $table->datetime('action_service_plan')->nullable();
+            $table->datetime('action_service_actual')->nullable();
 
-            $table->time('action_backlog_plan')->nullable();
-            $table->time('action_backlog_actual')->nullable();
+            $table->datetime('action_backlog_plan')->nullable();
+            $table->datetime('action_backlog_actual')->nullable();
 
-            $table->time('qa7_plan')->nullable();
-            $table->time('qa7_actual')->nullable();
+            $table->datetime('qa7_plan')->nullable();
+            $table->datetime('qa7_actual')->nullable();
 
             // Downtime (duration-based)
             $table->unsignedSmallInteger('downtime_plan')->nullable();   // minutes or hours
             $table->unsignedSmallInteger('downtime_actual')->nullable();
+
+            $table->unsignedSmallInteger('downtime_countdown')->nullable();
 
             // Notes
             $table->text('note_in')->nullable();

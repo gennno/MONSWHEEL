@@ -16,7 +16,7 @@
 
         <!-- TIME -->
         <div class="text-gray-400 text-sm hidden sm:block">
-            {{ now()->format('d M Y • H:i') }}
+            {{ now('Asia/Jakarta')->format('d M Y • H:i') }}
         </div>
     </div>
 

@@ -30,27 +30,29 @@ public function store(Request $request)
         'service_date' => 'required|date',
         'unit_id' => 'required|exists:units,id',
 
-        'in_plan' => 'required|date_format:H:i',
-        'qa1_plan' => 'nullable|date_format:H:i',
-        'washing_plan' => 'nullable|date_format:H:i',
-        'action_service_plan' => 'nullable|date_format:H:i',
-        'action_backlog_plan' => 'nullable|date_format:H:i',
-        'qa7_plan' => 'required|date_format:H:i',
+        // 🔥 CHANGE: datetime-local format
+        'in_plan' => 'required|date',
+        'qa1_plan' => 'nullable|date',
+        'washing_plan' => 'nullable|date',
+        'action_service_plan' => 'nullable|date',
+        'action_backlog_plan' => 'nullable|date',
+        'qa7_plan' => 'required|date',
 
         'downtime_plan' => 'nullable|integer|min:0|max:32767',
+        'downtime_countdown' => 'nullable|integer|min:0|max:32767', // ✅ NEW
+        'washing_remark' => 'nullable|in:ok,over', // ✅ NEW
+
         'backlog_item' => 'nullable|string',
         'status' => 'required|in:plan',
     ]);
 
     DB::transaction(function () use ($data) {
 
-        // 🔎 cari service aktif lama (CN sama)
         $oldService = Service::where('unit_id', $data['unit_id'])
             ->whereIn('status', ['plan', 'process', 'continue','done'])
             ->first();
 
         if ($oldService) {
-            // 🗃️ pindahkan ke service_histories
             ServiceHistory::create([
                 'service_id' => $oldService->id,
                 'unit_id' => $oldService->unit_id,
@@ -67,6 +69,10 @@ public function store(Request $request)
                 'qa1_actual' => $oldService->qa1_actual,
                 'washing_plan' => $oldService->washing_plan,
                 'washing_actual' => $oldService->washing_actual,
+
+                // ✅ NEW FIELD COPY
+                'washing_remark' => $oldService->washing_remark,
+
                 'action_service_plan' => $oldService->action_service_plan,
                 'action_service_actual' => $oldService->action_service_actual,
                 'action_backlog_plan' => $oldService->action_backlog_plan,
@@ -76,6 +82,9 @@ public function store(Request $request)
 
                 'downtime_plan' => $oldService->downtime_plan,
                 'downtime_actual' => $oldService->downtime_actual,
+
+                // ✅ NEW FIELD COPY
+                'downtime_countdown' => $oldService->downtime_countdown,
 
                 'note_in' => $oldService->note_in,
                 'note_qa1' => $oldService->note_qa1,
@@ -94,11 +103,10 @@ public function store(Request $request)
                 'archived_by' => auth()->id(),
             ]);
 
-            // ❌ hapus service lama
             $oldService->delete();
         }
 
-        // ➕ simpan service baru
+        // ➕ SAVE NEW
         Service::create($data);
     });
 

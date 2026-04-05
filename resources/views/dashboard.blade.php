@@ -59,12 +59,12 @@
 
                         <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">IN</th>
                         <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">QA 1</th>
-                        <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">Washing</th>
+                        <th colspan="3" class="px-4 py-2 border border-gray-700 text-center">Washing</th>
                         <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">Action Service</th>
                         <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">Action Backlog</th>
                         <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">QA 7</th>
 
-                        <th colspan="2" class="px-4 py-2 border border-gray-700 text-center">Downtime</th>
+                        <th colspan="3" class="px-4 py-2 border border-gray-700 text-center">Downtime</th>
 
                         <th rowspan="2" class="px-4 py-4 border border-gray-700 text-center">Remark</th>
                     </tr>
@@ -74,6 +74,14 @@
                         @for ($i = 0; $i < 7; $i++)
                             <th class="px-3 py-2 border border-gray-700 text-center">Plan</th>
                             <th class="px-3 py-2 border border-gray-700 text-center">Actual</th>
+
+                            @if ($i === 2)
+                                <th class="px-3 py-2 border border-gray-700 text-center">Remark</th>
+                            @endif
+
+                                @if ($i === 6)
+                                    <th class="px-3 py-2 border border-gray-700 text-center">Countdown</th>
+                                @endif
                         @endfor
                     </tr>
 
@@ -162,6 +170,15 @@
                                 {{ actualCellClass('washing_actual', $lastActualField) }}">
                                 {{ $service->washing_actual?->format('H:i') ?? '-' }}
                             </td>
+                            <td class="px-3 py-3 text-center border-r border-gray-700">
+                                @if($service->washing_remark)
+                                    <span class="px-2 py-1 text-xs rounded bg-blue-600/20 text-blue-300 font-bold">
+                                        {{ floor($service->washing_remark / 60) }}h {{ $service->washing_remark % 60 }}m
+                                    </span>
+                                @else
+                                    -
+                                @endif
+                            </td>
 
                             <!-- Action Service -->
                             <td class="px-3 py-3 text-center">{{ $service->action_service_plan?->format('H:i') ?? '-' }}</td>
@@ -186,13 +203,27 @@
                             </td>
 
                             <!-- Downtime -->
-<td class="px-3 py-3 text-center">
-    {{ $service->downtime_plan_formatted }}
-</td>
+                            <td class="px-3 py-3 text-center">
+                                {{ $service->downtime_plan_formatted }}
+                            </td>
 
-<td class="px-3 py-3 text-center bg-red-600/20 font-bold border-r border-gray-700">
-    {{ $service->downtime_actual_formatted }}
-</td>
+                            <td class="px-3 py-3 text-center bg-red-600/20 font-bold">
+                                {{ $service->downtime_actual_formatted }}
+                            </td>
+
+                            <td class="px-3 py-3 text-center border-r border-gray-700">
+                                @if(!is_null($service->downtime_countdown))
+                                    <span class="px-2 py-1 text-xs rounded font-bold
+                                        {{ $service->downtime_countdown == 0 
+                                            ? 'bg-red-600 text-white animate-pulse' 
+                                            : 'bg-blue-600/20 text-blue-300' }}">
+                                        
+                                        {{ floor($service->downtime_countdown / 60) }}h {{ $service->downtime_countdown % 60 }}m
+                                    </span>
+                                @else
+                                    -
+                                @endif
+                            </td>
 
                             <!-- Remark -->
                             <td class="px-4 py-3 text-center">

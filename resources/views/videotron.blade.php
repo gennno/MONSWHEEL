@@ -39,17 +39,26 @@
             $('#serviceTable').DataTable().destroy();
         }
 
-        $('#serviceTable').DataTable({
-            scrollX: false,
-            autoWidth: false,
-            paging: false,
-            searching: false,
-            ordering: true,
-            info: false,
-            pageLength: 15,
-            lengthChange: false,
-            order: [[3, 'asc']]
-        });
+$('#serviceTable').DataTable({
+    scrollX: false,
+    autoWidth: false,
+    paging: false,
+    searching: false,
+    ordering: true,
+    info: false,
+    pageLength: 15,
+    lengthChange: false,
+    order: [[3, 'asc']],
+
+    columnDefs: [
+        {
+            targets: 4, // kolom Bays
+            width: "30px",
+            className: "text-center"
+        }
+        
+    ]
+});
     }
 
     function refreshVideotron() {

@@ -23,23 +23,30 @@ class Service extends Model
         'bays',
         'backlog_item',
 
-        // Time log (plan vs actual)
+        // Time log (PLAN vs ACTUAL)
         'in_plan',
         'in_actual',
+
         'qa1_plan',
         'qa1_actual',
+
         'washing_plan',
         'washing_actual',
+        'washing_remark',
+
         'action_service_plan',
         'action_service_actual',
+
         'action_backlog_plan',
         'action_backlog_actual',
+
         'qa7_plan',
         'qa7_actual',
 
-        // Downtime (duration)
+        // Downtime
         'downtime_plan',
         'downtime_actual',
+        'downtime_countdown',
 
         // Notes
         'note_in',
@@ -61,32 +68,35 @@ class Service extends Model
      * Attribute casting
      */
     protected $casts = [
-        'service_date'   => 'date',
-        'handover_at'    => 'datetime',
-        'completed_at'   => 'datetime',
-        'in_plan' => 'datetime:H:i:s',
-        'in_actual' => 'datetime:H:i:s',
+        'service_date' => 'date',
 
-        'qa1_plan' => 'datetime:H:i:s',
-        'qa1_actual' => 'datetime:H:i:s',
+        // DATETIME (FULL)
+        'in_plan' => 'datetime',
+        'in_actual' => 'datetime',
 
-        'washing_plan' => 'datetime:H:i:s',
-        'washing_actual' => 'datetime:H:i:s',
+        'qa1_plan' => 'datetime',
+        'qa1_actual' => 'datetime',
 
-        'action_service_plan' => 'datetime:H:i:s',
-        'action_service_actual' => 'datetime:H:i:s',
+        'washing_plan' => 'datetime',
+        'washing_actual' => 'datetime',
 
-        'action_backlog_plan' => 'datetime:H:i:s',
-        'action_backlog_actual' => 'datetime:H:i:s',
+        'action_service_plan' => 'datetime',
+        'action_service_actual' => 'datetime',
 
-        'qa7_plan' => 'datetime:H:i:s',
-        'qa7_actual' => 'datetime:H:i:s',
+        'action_backlog_plan' => 'datetime',
+        'action_backlog_actual' => 'datetime',
+
+        'qa7_plan' => 'datetime',
+        'qa7_actual' => 'datetime',
+
+        'handover_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     /*
     |--------------------------------------------------------------------------
     | RELATIONSHIPS
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------- 
     */
 
     public function unit()
@@ -97,20 +107,14 @@ class Service extends Model
     /*
     |--------------------------------------------------------------------------
     | SCOPES
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------- 
     */
 
-    /**
-     * Service today
-     */
     public function scopeToday($query)
     {
         return $query->whereDate('service_date', now()->toDateString());
     }
 
-    /**
-     * Active services (monitoring)
-     */
     public function scopeActive($query)
     {
         return $query->whereIn('status', ['process', 'continue']);
@@ -118,8 +122,8 @@ class Service extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
+    | STATUS HELPERS
+    |-------------------------------------------------------------------------- 
     */
 
     public function isPlanned(): bool
@@ -157,24 +161,67 @@ class Service extends Model
         return $this->remark === 'ok';
     }
 
-public function getDowntimePlanFormattedAttribute()
-{
-    if (!$this->downtime_plan) return '-';
-
-    $hours = floor($this->downtime_plan / 60);
-    $minutes = $this->downtime_plan % 60;
-
-    return "{$hours}h {$minutes}m";
-}
-
-public function getDowntimeActualFormattedAttribute()
-{
-    if (!$this->downtime_actual) return '-';
-
-    $hours = floor($this->downtime_actual / 60);
-    $minutes = $this->downtime_actual % 60;
-
-    return "{$hours}h {$minutes}m";
-}
-
+    public function isWashingOver(): bool
+    {
+        return $this->washing_remark === 'over';
     }
+
+    public function isWashingOk(): bool
+    {
+        return $this->washing_remark === 'ok';
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DOWNTIME HELPERS
+    |-------------------------------------------------------------------------- 
+    */
+
+    public function getDowntimePlanFormattedAttribute()
+    {
+        return $this->formatMinutes($this->downtime_plan);
+    }
+
+    public function getDowntimeActualFormattedAttribute()
+    {
+        return $this->formatMinutes($this->downtime_actual);
+    }
+
+    public function getDowntimeCountdownFormattedAttribute()
+    {
+        return $this->formatMinutes($this->downtime_countdown);
+    }
+
+    private function formatMinutes($minutes)
+    {
+        if (!$minutes) return '-';
+
+        $hours = floor($minutes / 60);
+        $mins = $minutes % 60;
+
+        return "{$hours}h {$mins}m";
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DURATION HELPERS (🔥 NEW - VERY USEFUL)
+    |-------------------------------------------------------------------------- 
+    */
+
+    public function getWashingDurationAttribute()
+    {
+        return $this->diffInMinutes($this->washing_plan, $this->washing_actual);
+    }
+
+    public function getInDurationAttribute()
+    {
+        return $this->diffInMinutes($this->in_plan, $this->in_actual);
+    }
+
+    private function diffInMinutes($start, $end)
+    {
+        if (!$start || !$end) return null;
+
+        return $start->diffInMinutes($end);
+    }
+}

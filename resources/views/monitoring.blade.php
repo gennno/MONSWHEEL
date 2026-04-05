@@ -104,7 +104,7 @@
                     </div>
 
                     <!-- PERSON IN CHARGE -->
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label class="text-sm text-gray-400">GL</label>
                             <input type="text" name="gl"
@@ -115,15 +115,16 @@
                             <input type="text" name="kapten"
                                 class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
-                    </div>
-
-
+                        
                     <!-- BAYS -->
                     <div>
                         <label class="text-sm text-gray-400">Bays</label>
                         <input type="number" name="bays" min="1"
                             class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                     </div>
+                    </div>
+
+
 
                     <!-- TIME LOG -->
                     <div class="grid grid-cols-2 gap-4">
@@ -199,7 +200,7 @@
                     </div>
 
                     <!-- PIC -->
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label class="text-sm text-gray-400">GL</label>
                             <input type="text" id="edit_gl"
@@ -210,6 +211,12 @@
                             <input type="text" id="edit_kapten"
                                 class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
                         </div>
+                                            <!-- BAYS -->
+                    <div>
+                        <label class="text-sm text-gray-400">Bays</label>
+                        <input type="number" name="bays" min="1"
+                            class="w-full rounded-lg bg-gray-800 border border-gray-700 px-3 py-2">
+                    </div>
                     </div>
 
                     <!-- TIME LOG -->
