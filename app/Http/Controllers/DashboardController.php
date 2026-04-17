@@ -30,10 +30,8 @@ class DashboardController extends Controller
 
         $rfuReady = Service::where('status', 'done')->count();
 
-
-
         $services = Service::with('unit')
-            ->orderBy('created_at', 'asc')
+            ->latest('updated_at')
             ->get();
 
         return view('dashboard', compact(
@@ -54,9 +52,8 @@ class DashboardController extends Controller
         $totalServiceDone = Unit::where('status', 'service')->count();
         $rfuReady = Service::where('status', 'done')->count();
 
-
         $services = Service::with('unit')
-            ->orderBy('created_at', 'asc')
+            ->latest('updated_at')
             ->get();
 
         return view('videotron', compact(

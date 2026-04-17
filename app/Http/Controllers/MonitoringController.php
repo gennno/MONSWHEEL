@@ -272,59 +272,48 @@ public function updateTime(Request $request, Service $service)
     ]);
 
     $field = $request->field;
-    $value = $request->value . ':00';
 
-    // ✅ update field utama dulu
+    $date = $service->service_date 
+        ? Carbon::parse($service->service_date)->format('Y-m-d') 
+        : now()->format('Y-m-d');
+
+    $value = Carbon::createFromFormat('Y-m-d H:i', $date . ' ' . $request->value);
+
     $service->update([
         $field => $value
     ]);
 
-    $service->refresh(); // ambil data terbaru
+    $service->refresh();
 
-    /*
-    |--------------------------------------------------------------------------
-    | 🔥 1. HITUNG DOWNTIME COUNTDOWN (SISA)
-    |--------------------------------------------------------------------------
-    */
-
-    $times = collect([
+    $sequence = [
         $service->in_actual,
         $service->qa1_actual,
         $service->washing_actual,
         $service->action_service_actual,
         $service->action_backlog_actual,
         $service->qa7_actual,
-    ])->filter()->values();
+    ];
 
     $elapsed = 0;
+    $lastTime = null;
 
-    for ($i = 0; $i < $times->count() - 1; $i++) {
-        $start = Carbon::parse($times[$i]);
-        $end   = Carbon::parse($times[$i + 1]);
+    foreach ($sequence as $time) {
+        if (!$time) break;
 
-        if ($end->greaterThan($start)) {
-            $elapsed += $start->diffInMinutes($end);
+        $current = Carbon::parse($time);
+
+        if ($lastTime) {
+            if ($current->lessThan($lastTime)) {
+                $current->addDay();
+            }
+            $elapsed += $lastTime->diffInMinutes($current);
         }
-    }
 
-    // kalau masih proses, tambahkan dari last → now
-    if ($times->isNotEmpty()) {
-        $last = Carbon::parse($times->last());
-        $now = now();
-
-        if ($now->greaterThan($last)) {
-            $elapsed += $last->diffInMinutes($now);
-        }
+        $lastTime = $current;
     }
 
     $downtimePlan = (int) $service->downtime_plan;
     $countdown = max($downtimePlan - $elapsed, 0);
-
-    /*
-    |--------------------------------------------------------------------------
-    | 🔥 2. WASHING DURATION → TRIGGER DI ACTION SERVICE
-    |--------------------------------------------------------------------------
-    */
 
     $washingDuration = null;
 
@@ -334,17 +323,13 @@ public function updateTime(Request $request, Service $service)
             $start = Carbon::parse($service->washing_actual);
             $end   = Carbon::parse($service->action_service_actual);
 
-            if ($end->greaterThan($start)) {
-                $washingDuration = $start->diffInMinutes($end);
+            if ($end->lessThan($start)) {
+                $end->addDay();
             }
+
+            $washingDuration = $start->diffInMinutes($end);
         }
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | 🔥 SAVE UPDATE TAMBAHAN
-    |--------------------------------------------------------------------------
-    */
 
     $updateData = [
         'downtime_countdown' => $countdown,

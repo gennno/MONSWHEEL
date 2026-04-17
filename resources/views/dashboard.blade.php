@@ -303,7 +303,7 @@
                 pageLength: 10,
                 lengthMenu: [10, 25, 50, 100],
 
-                order: [[3, 'asc']], // default sort by "Unit Masuk"
+                order: [],
 
                 language: {
                     search: "Search:",

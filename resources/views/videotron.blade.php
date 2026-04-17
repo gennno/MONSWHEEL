@@ -48,7 +48,7 @@ $('#serviceTable').DataTable({
     info: false,
     pageLength: 15,
     lengthChange: false,
-    order: [[3, 'asc']],
+    order: [],
 
     columnDefs: [
         {
