@@ -33,16 +33,3 @@ A modern web application for ...
 | Vanilla JavaScript | Frontend |
 
 ---
-
-## 📸 Screenshots
-
-| Dashboard | Login |
-|-----------|-------|
-| ![](docs/dashboard.png) | ![](docs/login.png) |
-
----
-
-## 🚀 Installation
-
-```bash
-git clone ...
